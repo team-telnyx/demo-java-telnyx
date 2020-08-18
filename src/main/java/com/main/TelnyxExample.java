@@ -1,6 +1,8 @@
 package com.main;
 
 import com.google.gson.Gson;
+import com.main.model.Dlr;
+import com.main.model.sendRequest;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.client.ApiClient;
 import io.swagger.client.Configuration;

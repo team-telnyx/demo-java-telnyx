@@ -1,4 +1,4 @@
-package com.main;
+package com.main.model;
 
 public class sendRequest {
     public String to;
