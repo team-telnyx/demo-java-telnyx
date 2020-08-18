@@ -1,6 +1,6 @@
 <div align="center">
 
-# Telnyx Java {%tutorial-name%}
+# Telnyx Java Getting Started
 
 ![Telnyx](logo-dark.png)
 
@@ -106,7 +106,7 @@ Send a `POST` request to `http://{your-url}.ngrok.io/SendMessage` and the Server
 
 
 ```http
-POST http://{your-url}.ngrok.io/SendMessage HTTP/1.1
+POST http://your-url.ngrok.io/SendMessage HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
