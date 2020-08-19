@@ -145,7 +145,7 @@ Send a `POST` request to `http://{your-url}.ngrok.io/availableNumbers` and the S
 
 
 ```http
-POST http://your-url.ngrok.io/SendMessage HTTP/1.1
+POST http://your-url.ngrok.io/availableNumbers HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
