@@ -1,20 +1,16 @@
 package com.main;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.main.model.Dlr;
-import com.main.model.phoneNumberSearchRequest;
-import com.main.model.sendRequest;
+import com.main.model.PhoneNumberOrderRequest;
+import com.main.model.messageSendRequest;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
 import io.swagger.client.Configuration;
 import io.swagger.client.api.MessagesApi;
+import io.swagger.client.api.NumberOrdersApi;
 import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.CreateMessageResponse;
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
-import io.swagger.client.model.NewMessage;
-import spark.QueryParamsMap;
+import io.swagger.client.model.*;
 
 
 import java.util.UUID;
@@ -34,7 +30,7 @@ public class TelnyxExample {
     // Instantiate the client
     static ApiClient defaultClient = Configuration.getDefaultApiClient();
 
-    private static String sendMessage (sendRequest request) {
+    private static String sendMessage (messageSendRequest request) {
 
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
@@ -85,6 +81,20 @@ public class TelnyxExample {
         }
     }
 
+    private static String orderNumber(String phoneNumber) {
+        NumberOrdersApi apiInstance = new NumberOrdersApi();
+        NumberOrder orderRequest = new NumberOrder()
+                .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber));
+        try {
+            CreateNumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
+            return new Gson().toJson(orderResponse);
+        } catch (Exception e) {
+            System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
+            e.printStackTrace();
+            return "{ \"error\": \"Problem ordering phone numbers\"}";
+        }
+    }
+
 
     public static void main(String[] args) {
         assert TELNYX_APP_PORT != null;
@@ -95,8 +105,8 @@ public class TelnyxExample {
 
         post("/SendMessage", (req, res) -> {
             String json = req.body();
-            sendRequest sendRequest = new Gson().fromJson(json, sendRequest.class);
-            String result = sendMessage(sendRequest);
+            messageSendRequest messageSendRequest = new Gson().fromJson(json, messageSendRequest.class);
+            String result = sendMessage(messageSendRequest);
             res.type("application/json");
             return result;
         });
@@ -127,6 +137,14 @@ public class TelnyxExample {
                     req.queryParams("city")
             );
             return availableNumbers;
+        });
+
+        post("/availableNumbers", (req, res) -> {
+            String json = req.body();
+            PhoneNumberOrderRequest orderRequest = new Gson().fromJson(json, PhoneNumberOrderRequest.class);
+            String result = orderNumber(orderRequest.phoneNumber);
+            res.type("application/json");
+            return result;
         });
 
     }
