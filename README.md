@@ -26,6 +26,7 @@ You will need to set up:
 ## What you can do
 
 * Send a text message and inspect the DLR response
+* Send a search request to look for available Numbers
 
 ## Usage
 
@@ -96,6 +97,8 @@ At this point you can point your application to generated ngrok URL + path  (Exa
 
 Open your IDE and run the application
 
+#### Sending Messages
+
 Send a `POST` request to `http://{your-url}.ngrok.io/SendMessage` and the Server will proxy the request to your Telnyx account
 
 | Parameter | Description                  | Example         |
@@ -114,6 +117,21 @@ Content-Type: application/json; charset=utf-8
     "from": "+191976429067",
     "text": "hello world 👋"
 }
+```
+
+#### Searching Phone numbers
+
+Send a `GET` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
+
+| Query Parameter | Description                       | Example   | Required |
+|:----------------|:----------------------------------|:----------|:---------|
+| `countryCode`   | The country searching             | `US`      | True     |
+| `state`         | The Canadian Province or US State | `NC`      | True     |
+| `city`          | The city                          | `Raleigh` | True     |
+
+
+```http
+GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC HTTP/1.1
 ```
 
 ## Next Steps
