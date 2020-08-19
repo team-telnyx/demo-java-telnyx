@@ -134,4 +134,23 @@ Send a `GET` request to `http://{your-url}.ngrok.io/availableNumbers` and the Se
 GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC HTTP/1.1
 ```
 
+#### Ordering Phone numbers
+
+Send a `POST` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
+
+| Parameter     | Description                       | Example        |
+|:--------------|:----------------------------------|:---------------|
+| `phoneNumber` | The desired phone number to order | `+19198675309` |
+
+
+
+```http
+POST http://your-url.ngrok.io/SendMessage HTTP/1.1
+Content-Type: application/json; charset=utf-8
+
+{
+  "phoneNumber": "+19198675309"
+}
+```
+
 ## Next Steps
