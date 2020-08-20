@@ -3,16 +3,21 @@ package com.main;
 import com.google.gson.Gson;
 import com.main.model.Dlr;
 import com.main.model.PhoneNumberOrderRequest;
-import com.main.model.messageSendRequest;
+import com.main.model.SearchNumbersResponse;
+import com.main.model.MessageSendRequest;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.client.ApiClient;
+import io.swagger.client.ApiException;
 import io.swagger.client.Configuration;
 import io.swagger.client.api.MessagesApi;
 import io.swagger.client.api.NumberOrdersApi;
+import io.swagger.client.api.NumberReservationsApi;
 import io.swagger.client.api.NumberSearchApi;
 import io.swagger.client.model.*;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static spark.Spark.*;
@@ -30,7 +35,7 @@ public class TelnyxExample {
     // Instantiate the client
     static ApiClient defaultClient = Configuration.getDefaultApiClient();
 
-    private static String sendMessage (messageSendRequest request) {
+    private static String sendMessage (MessageSendRequest request) {
 
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
@@ -54,8 +59,10 @@ public class TelnyxExample {
         }
     }
 
-    private static String searchNumbers(String countryCode, String state, String city){
+    private static SearchNumbersResponse searchNumbers(String countryCode, String state, String city){
         NumberSearchApi apiInstance = new NumberSearchApi();
+        SearchNumbersResponse numbersResponse = new SearchNumbersResponse();
+
         try {
             ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(
                     null,
@@ -68,17 +75,21 @@ public class TelnyxExample {
                     null,
                     null,
                     null,
-                    10,
+                    2,
                     null,
                     null,
                     null
             );
-            return new Gson().toJson(availablePhoneNumbers.getData());
+            numbersResponse.setApiResponse(availablePhoneNumbers);
+            numbersResponse.setJson(new Gson().toJson(availablePhoneNumbers));
+            numbersResponse.setValid(true);
         } catch (Exception e) {
             System.err.println("Exception when calling NumberSearchApi#listAvailablePhoneNumbers");
             e.printStackTrace();
-            return "{ \"error\": \"Problem searching phone numbers\"}";
+            numbersResponse.setJson("{ \"error\": \"Problem searching phone numbers\"}");
+            numbersResponse.setValid(false);
         }
+        return numbersResponse;
     }
 
     private static String orderNumber(String phoneNumber) {
@@ -88,10 +99,37 @@ public class TelnyxExample {
         try {
             CreateNumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
             return new Gson().toJson(orderResponse);
-        } catch (Exception e) {
+        } catch (ApiException e) {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
             e.printStackTrace();
-            return "{ \"error\": \"Problem ordering phone numbers\"}";
+            return e.getResponseBody();
+        }
+        catch (Exception e) {
+            System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
+            e.printStackTrace();
+            return String.format(
+                    "{ \"error\": \"Problem searching phone numbers\", \"message\":\"%s\"}", e.getLocalizedMessage());
+        }
+    }
+
+    private static String reserveNumbers(ListAvailablePhoneNumbersResponse apiResponse) {
+        NumberReservationsApi apiInstance = new NumberReservationsApi();
+
+        List<ReservedPhoneNumber> numberList = new ArrayList<ReservedPhoneNumber>();
+        apiResponse.getData().forEach(availablePhoneNumber -> {
+            ReservedPhoneNumber phoneNumber = new ReservedPhoneNumber()
+                    .phoneNumber(availablePhoneNumber.getPhoneNumber());
+            numberList.add(phoneNumber);
+        });
+        NumberReservation numberReservationRequest = new NumberReservation()
+                .phoneNumbers(numberList);
+        try {
+            CreateNumberReservationsResponse numberReservations = apiInstance.createNumberReservations(numberReservationRequest);
+            return new Gson().toJson(numberReservations);
+        } catch (Exception e) {
+            System.err.println("Exception when calling NumberReservationsApi#createNumberReservations");
+            e.printStackTrace();
+            return "{ \"error\": \"Problem reserving phone numbers\"}";
         }
     }
 
@@ -105,7 +143,7 @@ public class TelnyxExample {
 
         post("/SendMessage", (req, res) -> {
             String json = req.body();
-            messageSendRequest messageSendRequest = new Gson().fromJson(json, messageSendRequest.class);
+            MessageSendRequest messageSendRequest = new Gson().fromJson(json, MessageSendRequest.class);
             String result = sendMessage(messageSendRequest);
             res.type("application/json");
             return result;
@@ -114,7 +152,6 @@ public class TelnyxExample {
         post("/Callbacks/Messaging/Outbound", (req, res) -> {
             String json = req.body();
             try {
-
                 Dlr dlr = new Gson().fromJson(json, Dlr.class);
                 String id = dlr.getData().getPayload().getId();
                 String eventType = dlr.getData().getEventType();
@@ -131,12 +168,18 @@ public class TelnyxExample {
 
         get("/availableNumbers", (req, res)-> {
             res.type("application/json");
-            String availableNumbers = searchNumbers(
+            SearchNumbersResponse availableNumbers = searchNumbers(
                     req.queryParams("countryCode"),
                     req.queryParams("state"),
                     req.queryParams("city")
             );
-            return availableNumbers;
+            if (Boolean.parseBoolean(req.queryParams("reserve")) && availableNumbers.valid) {
+                String reservation = reserveNumbers(availableNumbers.getApiResponse());
+                return reservation;
+            }
+            else {
+                return availableNumbers.getJson();
+            }
         });
 
         post("/availableNumbers", (req, res) -> {
@@ -148,4 +191,6 @@ public class TelnyxExample {
         });
 
     }
+
+
 }

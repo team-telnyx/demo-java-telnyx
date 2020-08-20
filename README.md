@@ -26,7 +26,9 @@ You will need to set up:
 ## What you can do
 
 * Send a text message and inspect the DLR response
-* Send a search request to look for available Numbers
+* Send a search request to look for available Numbers (limits to 2)
+ * Pass an optional query parameter `reserve=true` to reserve the numbers
+* Create a phone number order
 
 ## Usage
 
@@ -97,7 +99,9 @@ At this point you can point your application to generated ngrok URL + path  (Exa
 
 Open your IDE and run the application
 
-#### Sending Messages
+## API Docs
+
+### Sending Messages
 
 Send a `POST` request to `http://{your-url}.ngrok.io/SendMessage` and the Server will proxy the request to your Telnyx account
 
@@ -106,7 +110,6 @@ Send a `POST` request to `http://{your-url}.ngrok.io/SendMessage` and the Server
 | `to`      | The destination phone number | `+19198675309`  |
 | `from`    | The Telnyx phone number      | `+191976429067` |
 | `text`    | The actual message content   | `hello world 👋` |
-
 
 ```http
 POST http://your-url.ngrok.io/SendMessage HTTP/1.1
@@ -119,30 +122,38 @@ Content-Type: application/json; charset=utf-8
 }
 ```
 
-#### Searching Phone numbers
+### Searching Phone numbers
 
 Send a `GET` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
 
-| Query Parameter | Description                       | Example   | Required |
-|:----------------|:----------------------------------|:----------|:---------|
-| `countryCode`   | The country searching             | `US`      | True     |
-| `state`         | The Canadian Province or US State | `NC`      | True     |
-| `city`          | The city                          | `Raleigh` | True     |
+| Query Parameter | Description                                | Example   | Required |
+|:----------------|:-------------------------------------------|:----------|:---------|
+| `countryCode`   | The country searching                      | `US`      | True     |
+| `state`         | The Canadian Province or US State          | `NC`      | True     |
+| `city`          | The city                                   | `Raleigh` | True     |
+| `reserve`       | Boolean value to reserve the found numbers | `true`    | False    |
 
+⚠️ passing `reserve=true` will change the response payload from [availableNumbers response](https://developers.telnyx.com/docs/api/v2/numbers/Number-Search#listAvailablePhoneNumbers) to [reservation response](https://developers.telnyx.com/docs/api/v2/numbers/Number-Reservations#createNumberReservations)
+
+#### Example 1 of 2: Search Raleigh, NC phone numbers
 
 ```http
 GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC HTTP/1.1
 ```
 
-#### Ordering Phone numbers
+#### Example 2 of 2: Search **AND RESERVE** Raleigh, NC phone numbers
+
+```http
+GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC?reserve=true HTTP/1.1
+```
+
+### Ordering Phone numbers
 
 Send a `POST` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
 
 | Parameter     | Description                       | Example        |
 |:--------------|:----------------------------------|:---------------|
 | `phoneNumber` | The desired phone number to order | `+19198675309` |
-
-
 
 ```http
 POST http://your-url.ngrok.io/availableNumbers HTTP/1.1
