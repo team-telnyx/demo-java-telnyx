@@ -5,15 +5,25 @@ import com.main.model.Dlr;
 import com.main.model.PhoneNumberOrderRequest;
 import com.main.model.SearchNumbersResponse;
 import com.main.model.MessageSendRequest;
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.Configuration;
+import com.telnyx.sdk.apis.MessagesApi;
+import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.apis.NumberReservationsApi;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.CreateMessageRequest;
+import com.telnyx.sdk.models.CreateNumberOrderRequest;
+import com.telnyx.sdk.models.CreateNumberReservationRequest;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.models.MessageResponse;
+import com.telnyx.sdk.models.NumberOrder;
+import com.telnyx.sdk.models.NumberOrderResponse;
+import com.telnyx.sdk.models.NumberReservation;
+import com.telnyx.sdk.models.NumberReservationResponse;
+import com.telnyx.sdk.models.PhoneNumber;
+import com.telnyx.sdk.models.ReservedPhoneNumber;
 import io.github.cdimascio.dotenv.Dotenv;
-import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
-import io.swagger.client.Configuration;
-import io.swagger.client.api.MessagesApi;
-import io.swagger.client.api.NumberOrdersApi;
-import io.swagger.client.api.NumberReservationsApi;
-import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.*;
 
 
 import java.util.ArrayList;
@@ -39,16 +49,18 @@ public class TelnyxExample {
 
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
-        //Create the payload
-        NewMessage newMessage = new NewMessage()
+        CreateMessageRequest newMessage = new CreateMessageRequest()
                 .from(request.from)
                 .to(request.to)
                 .text(request.text)
                 .useProfileWebhooks(false)
                 .webhookUrl(WEBHOOK_URL);
+
+        //Create the payload
+
         // Send the message
         try {
-            CreateMessageResponse result = apiInstance.createMessage(newMessage);
+            MessageResponse result = apiInstance.createMessage(newMessage);
             UUID id = result.getData().getId();
             System.out.printf("Sent message with ID: %s\n", id);
             return new Gson().toJson(result);
@@ -64,22 +76,23 @@ public class TelnyxExample {
         SearchNumbersResponse numbersResponse = new SearchNumbersResponse();
 
         try {
-            ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(
-                    null,
-                    null,
-                    null,
-                    city,
-                    state,
-                    countryCode,
-                    null,
-                    null,
-                    null,
-                    null,
-                    2,
-                    null,
-                    null,
-                    null
-            );
+            ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance
+                    .listAvailablePhoneNumbers(
+                            null,
+                            null,
+                            null,
+                            city,
+                            state,
+                            countryCode,
+                            null,
+                            null,
+                            null,
+                            null,
+                            2,
+                            null,
+                            null,
+                            null
+                    );
             numbersResponse.setApiResponse(availablePhoneNumbers);
             numbersResponse.setJson(new Gson().toJson(availablePhoneNumbers));
             numbersResponse.setValid(true);
@@ -94,10 +107,10 @@ public class TelnyxExample {
 
     private static String orderNumber(String phoneNumber) {
         NumberOrdersApi apiInstance = new NumberOrdersApi();
-        NumberOrder orderRequest = new NumberOrder()
+        CreateNumberOrderRequest orderRequest = new CreateNumberOrderRequest()
                 .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber));
         try {
-            CreateNumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
+            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
             return new Gson().toJson(orderResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
@@ -121,10 +134,12 @@ public class TelnyxExample {
                     .phoneNumber(availablePhoneNumber.getPhoneNumber());
             numberList.add(phoneNumber);
         });
-        NumberReservation numberReservationRequest = new NumberReservation()
+        CreateNumberReservationRequest numberReservationRequest = new CreateNumberReservationRequest()
                 .phoneNumbers(numberList);
         try {
-            CreateNumberReservationsResponse numberReservations = apiInstance.createNumberReservations(numberReservationRequest);
+            apiInstance.createNumberReservation(numberReservationRequest);
+            NumberReservationResponse numberReservations = apiInstance
+                    .createNumberReservation(numberReservationRequest);
             return new Gson().toJson(numberReservations);
         } catch (Exception e) {
             System.err.println("Exception when calling NumberReservationsApi#createNumberReservations");
