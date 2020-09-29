@@ -21,6 +21,10 @@ import com.telnyx.sdk.models.NumberOrder;
 import com.telnyx.sdk.models.NumberOrderResponse;
 import com.telnyx.sdk.models.NumberReservation;
 import com.telnyx.sdk.models.NumberReservationResponse;
+import com.telnyx.sdk.models.OutboundMessage;
+import com.telnyx.sdk.models.OutboundMessage.EventTypeEnum;
+import com.telnyx.sdk.models.OutboundMessageEvent;
+
 import com.telnyx.sdk.models.PhoneNumber;
 import com.telnyx.sdk.models.ReservedPhoneNumber;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -40,7 +44,7 @@ public class TelnyxExample {
     private static final String TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
 //    private static final String TELNYX_PUBLIC_KEY = dotenv.get("TELNYX_PUBLIC_KEY");
     private static final String TELNYX_APP_PORT = dotenv.get("TELNYX_APP_PORT");
-    private static final String WEBHOOK_URL = "http://d461e798f09e.ngrok.io/Callbacks/Messaging/Outbound";
+    private static final String WEBHOOK_URL = "http://e8d1164da322.ngrok.io/Callbacks/Messaging/Outbound";
 
     // Instantiate the client
     static ApiClient defaultClient = Configuration.getDefaultApiClient();
@@ -167,9 +171,30 @@ public class TelnyxExample {
         post("/Callbacks/Messaging/Outbound", (req, res) -> {
             String json = req.body();
             try {
-                Dlr dlr = new Gson().fromJson(json, Dlr.class);
-                String id = dlr.getData().getPayload().getId();
-                String eventType = dlr.getData().getEventType();
+//                OutboundMessage mm = new OutboundMessage()
+                OutboundMessageEvent dlr = new Gson().fromJson(json, OutboundMessageEvent.class);
+                OutboundMessage data = dlr.getData();
+                UUID id = data.getId();
+                EventTypeEnum eventType = data.getEventType();
+                System.out.printf("Message id: %s Status: %s\n", id, eventType);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            res.status(200);
+
+            return "";//Just needs an ACK
+        });
+
+        post("/Callbacks/Voice/Events", (req, res) -> {
+            String json = req.body();
+            try {
+//                OutboundMessage mm = new OutboundMessage()
+                OutboundMessageEvent dlr = new Gson().fromJson(json, OutboundMessageEvent.class);
+                OutboundMessage data = dlr.getData();
+                UUID id = data.getId();
+                EventTypeEnum eventType = data.getEventType();
                 System.out.printf("Message id: %s Status: %s\n", id, eventType);
             }
             catch (Exception e) {
