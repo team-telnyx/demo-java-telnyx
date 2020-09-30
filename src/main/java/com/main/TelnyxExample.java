@@ -1,39 +1,37 @@
 package com.main;
 
 import com.google.gson.Gson;
-import com.main.model.Dlr;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.main.model.PhoneNumberOrderRequest;
 import com.main.model.SearchNumbersResponse;
 import com.main.model.MessageSendRequest;
 import com.telnyx.sdk.ApiClient;
-import com.telnyx.sdk.ApiException;
 import com.telnyx.sdk.Configuration;
-import com.telnyx.sdk.apis.MessagesApi;
-import com.telnyx.sdk.apis.NumberOrdersApi;
-import com.telnyx.sdk.apis.NumberReservationsApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.CreateMessageRequest;
-import com.telnyx.sdk.models.CreateNumberOrderRequest;
-import com.telnyx.sdk.models.CreateNumberReservationRequest;
-import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
-import com.telnyx.sdk.models.MessageResponse;
-import com.telnyx.sdk.models.NumberOrder;
-import com.telnyx.sdk.models.NumberOrderResponse;
-import com.telnyx.sdk.models.NumberReservation;
-import com.telnyx.sdk.models.NumberReservationResponse;
+import com.telnyx.sdk.models.CallInitiated;
+import com.telnyx.sdk.models.CallInitiatedEvent;
 import com.telnyx.sdk.models.OutboundMessage;
 import com.telnyx.sdk.models.OutboundMessage.EventTypeEnum;
 import com.telnyx.sdk.models.OutboundMessageEvent;
 
-import com.telnyx.sdk.models.PhoneNumber;
-import com.telnyx.sdk.models.ReservedPhoneNumber;
 import io.github.cdimascio.dotenv.Dotenv;
 
-
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import static com.main.MessagingController.sendMessage;
+import static com.main.NumbersController.orderNumber;
+import static com.main.NumbersController.reserveNumbers;
+import static com.main.NumbersController.searchNumbers;
+import static com.main.CallController.step1CreateOutboundLeg;
 import static spark.Spark.*;
 
 
@@ -44,116 +42,17 @@ public class TelnyxExample {
     private static final String TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
 //    private static final String TELNYX_PUBLIC_KEY = dotenv.get("TELNYX_PUBLIC_KEY");
     private static final String TELNYX_APP_PORT = dotenv.get("TELNYX_APP_PORT");
-    private static final String WEBHOOK_URL = "http://e8d1164da322.ngrok.io/Callbacks/Messaging/Outbound";
+    public static final String WEBHOOK_URL = "http://e8d1164da322.ngrok.io/Callbacks/Messaging/Outbound";
+    public static final String TELNYX_PHONE_NUMBER = "+19196468161";
 
     // Instantiate the client
     static ApiClient defaultClient = Configuration.getDefaultApiClient();
 
-    private static String sendMessage (MessageSendRequest request) {
-
-        MessagesApi apiInstance = new MessagesApi(defaultClient);
-
-        CreateMessageRequest newMessage = new CreateMessageRequest()
-                .from(request.from)
-                .to(request.to)
-                .text(request.text)
-                .useProfileWebhooks(false)
-                .webhookUrl(WEBHOOK_URL);
-
-        //Create the payload
-
-        // Send the message
-        try {
-            MessageResponse result = apiInstance.createMessage(newMessage);
-            UUID id = result.getData().getId();
-            System.out.printf("Sent message with ID: %s\n", id);
-            return new Gson().toJson(result);
-        } catch (Exception e) {
-            System.err.println("Exception when calling MessagesApi#createLongCodeMessage");
-            e.printStackTrace();
-            return "{ \"error\": \"Problem sending message\"}";
-        }
-    }
-
-    private static SearchNumbersResponse searchNumbers(String countryCode, String state, String city){
-        NumberSearchApi apiInstance = new NumberSearchApi();
-        SearchNumbersResponse numbersResponse = new SearchNumbersResponse();
-
-        try {
-            ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance
-                    .listAvailablePhoneNumbers(
-                            null,
-                            null,
-                            null,
-                            city,
-                            state,
-                            countryCode,
-                            null,
-                            null,
-                            null,
-                            null,
-                            2,
-                            null,
-                            null,
-                            null
-                    );
-            numbersResponse.setApiResponse(availablePhoneNumbers);
-            numbersResponse.setJson(new Gson().toJson(availablePhoneNumbers));
-            numbersResponse.setValid(true);
-        } catch (Exception e) {
-            System.err.println("Exception when calling NumberSearchApi#listAvailablePhoneNumbers");
-            e.printStackTrace();
-            numbersResponse.setJson("{ \"error\": \"Problem searching phone numbers\"}");
-            numbersResponse.setValid(false);
-        }
-        return numbersResponse;
-    }
-
-    private static String orderNumber(String phoneNumber) {
-        NumberOrdersApi apiInstance = new NumberOrdersApi();
-        CreateNumberOrderRequest orderRequest = new CreateNumberOrderRequest()
-                .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber));
-        try {
-            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
-            return new Gson().toJson(orderResponse);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
-            e.printStackTrace();
-            return e.getResponseBody();
-        }
-        catch (Exception e) {
-            System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
-            e.printStackTrace();
-            return String.format(
-                    "{ \"error\": \"Problem searching phone numbers\", \"message\":\"%s\"}", e.getLocalizedMessage());
-        }
-    }
-
-    private static String reserveNumbers(ListAvailablePhoneNumbersResponse apiResponse) {
-        NumberReservationsApi apiInstance = new NumberReservationsApi();
-
-        List<ReservedPhoneNumber> numberList = new ArrayList<ReservedPhoneNumber>();
-        apiResponse.getData().forEach(availablePhoneNumber -> {
-            ReservedPhoneNumber phoneNumber = new ReservedPhoneNumber()
-                    .phoneNumber(availablePhoneNumber.getPhoneNumber());
-            numberList.add(phoneNumber);
-        });
-        CreateNumberReservationRequest numberReservationRequest = new CreateNumberReservationRequest()
-                .phoneNumbers(numberList);
-        try {
-            apiInstance.createNumberReservation(numberReservationRequest);
-            NumberReservationResponse numberReservations = apiInstance
-                    .createNumberReservation(numberReservationRequest);
-            return new Gson().toJson(numberReservations);
-        } catch (Exception e) {
-            System.err.println("Exception when calling NumberReservationsApi#createNumberReservations");
-            e.printStackTrace();
-            return "{ \"error\": \"Problem reserving phone numbers\"}";
-        }
-    }
-
-
     public static void main(String[] args) {
+
+        JsonDeserializer jsonDeserializer = (json, type, jsonDeserializationContext) -> OffsetDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        Gson gson = new GsonBuilder().registerTypeAdapter(OffsetDateTime.class, jsonDeserializer).create();
+
         assert TELNYX_APP_PORT != null;
         // Instantiate the client
         defaultClient.setAccessToken(TELNYX_API_KEY);
@@ -187,19 +86,33 @@ public class TelnyxExample {
             return "";//Just needs an ACK
         });
 
-        post("/Callbacks/Voice/Events", (req, res) -> {
+        post("/Callbacks/Voice/Inbound/Init", (req, res) -> {
             String json = req.body();
+
+            CallInitiatedEvent inboundCall = null;
             try {
-//                OutboundMessage mm = new OutboundMessage()
-                OutboundMessageEvent dlr = new Gson().fromJson(json, OutboundMessageEvent.class);
-                OutboundMessage data = dlr.getData();
-                UUID id = data.getId();
-                EventTypeEnum eventType = data.getEventType();
-                System.out.printf("Message id: %s Status: %s\n", id, eventType);
-            }
-            catch (Exception e) {
+                inboundCall = gson.fromJson(json, CallInitiatedEvent.class);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            UUID callControlId = inboundCall.getData().getPayload().getCallControlId();
+            UUID outboundLegId = step1CreateOutboundLeg(callControlId);
+
+
+            res.status(200);
+
+            return "";//Just needs an ACK
+        });
+
+        post("/Callbacks/Voice/Outbound", (req, res) -> {
+            String json = req.body();
+            CallInitiatedEvent inboundCall = new Gson().fromJson(json, CallInitiatedEvent.class);
+
+
+            UUID callControlId = inboundCall.getData().getPayload().getCallControlId();
+            UUID outboundLegId = step1CreateOutboundLeg(callControlId);
+
 
             res.status(200);
 
