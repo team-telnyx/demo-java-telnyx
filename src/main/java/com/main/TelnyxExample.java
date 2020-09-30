@@ -2,9 +2,10 @@ package com.main;
 
 import com.google.gson.Gson;
 import com.main.model.Dlr;
+import com.main.model.MessageSendRequest;
 import com.main.model.PhoneNumberOrderRequest;
 import com.main.model.SearchNumbersResponse;
-import com.main.model.MessageSendRequest;
+import com.main.scenarios.NumberSearchScenarios;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
@@ -13,29 +14,36 @@ import io.swagger.client.api.MessagesApi;
 import io.swagger.client.api.NumberOrdersApi;
 import io.swagger.client.api.NumberReservationsApi;
 import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.*;
-
+import io.swagger.client.model.CreateMessageResponse;
+import io.swagger.client.model.CreateNumberOrderResponse;
+import io.swagger.client.model.CreateNumberReservationsResponse;
+import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
+import io.swagger.client.model.NewMessage;
+import io.swagger.client.model.NumberOrder;
+import io.swagger.client.model.NumberReservation;
+import io.swagger.client.model.PhoneNumber;
+import io.swagger.client.model.ReservedPhoneNumber;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.port;
+import static spark.Spark.post;
 
 
 public class TelnyxExample {
 
-    static Dotenv dotenv = Dotenv.load();
-
-    private static final String TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
-//    private static final String TELNYX_PUBLIC_KEY = dotenv.get("TELNYX_PUBLIC_KEY");
-    private static final String TELNYX_APP_PORT = dotenv.get("TELNYX_APP_PORT");
     private static final String WEBHOOK_URL = "http://d461e798f09e.ngrok.io/Callbacks/Messaging/Outbound";
-
+    static Dotenv dotenv = Dotenv.load();
+    private static final String TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
+    //    private static final String TELNYX_PUBLIC_KEY = dotenv.get("TELNYX_PUBLIC_KEY");
+    private static final String TELNYX_APP_PORT = dotenv.get("TELNYX_APP_PORT");
     // Instantiate the client
     static ApiClient defaultClient = Configuration.getDefaultApiClient();
 
-    private static String sendMessage (MessageSendRequest request) {
+    private static String sendMessage(MessageSendRequest request) {
 
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
@@ -59,13 +67,17 @@ public class TelnyxExample {
         }
     }
 
-    private static SearchNumbersResponse searchNumbers(String countryCode, String state, String city){
+    private static SearchNumbersResponse searchNumbers(String phoneNumberStartWith,
+                                                       String countryCode,
+                                                       String state,
+                                                       String city,
+                                                       int filterLimit) {
         NumberSearchApi apiInstance = new NumberSearchApi();
         SearchNumbersResponse numbersResponse = new SearchNumbersResponse();
 
         try {
             ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(
-                    null,
+                    phoneNumberStartWith,
                     null,
                     null,
                     city,
@@ -75,7 +87,7 @@ public class TelnyxExample {
                     null,
                     null,
                     null,
-                    2,
+                    filterLimit,
                     null,
                     null,
                     null
@@ -103,8 +115,7 @@ public class TelnyxExample {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
             e.printStackTrace();
             return e.getResponseBody();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
             e.printStackTrace();
             return String.format(
@@ -133,7 +144,6 @@ public class TelnyxExample {
         }
     }
 
-
     public static void main(String[] args) {
         assert TELNYX_APP_PORT != null;
         // Instantiate the client
@@ -156,8 +166,7 @@ public class TelnyxExample {
                 String id = dlr.getData().getPayload().getId();
                 String eventType = dlr.getData().getEventType();
                 System.out.printf("Message id: %s Status: %s\n", id, eventType);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -166,23 +175,32 @@ public class TelnyxExample {
             return "";//Just needs an ACK
         });
 
-        get("/availableNumbers", (req, res)-> {
+        get("/available-numbers", (req, res) -> {
             res.type("application/json");
+
             SearchNumbersResponse availableNumbers = searchNumbers(
-                    req.queryParams("countryCode"),
+                    req.queryParams("start_with"),
+                    req.queryParams("country_code"),
                     req.queryParams("state"),
-                    req.queryParams("city")
-            );
+                    req.queryParams("city"),
+                    req.queryParams("limit") == null ? 2 : Integer.parseInt(req.queryParams("limit"))
+                    );
             if (Boolean.parseBoolean(req.queryParams("reserve")) && availableNumbers.valid) {
                 String reservation = reserveNumbers(availableNumbers.getApiResponse());
                 return reservation;
-            }
-            else {
+            } else {
                 return availableNumbers.getJson();
             }
         });
 
-        post("/availableNumbers", (req, res) -> {
+
+        get("/tests/run", (req, res) -> {
+            NumberSearchScenarios numberSearchScenarios = new NumberSearchScenarios();
+            numberSearchScenarios.runAllScenarios();
+            return null;
+        });
+
+        post("/order", (req, res) -> {
             String json = req.body();
             PhoneNumberOrderRequest orderRequest = new Gson().fromJson(json, PhoneNumberOrderRequest.class);
             String result = orderNumber(orderRequest.phoneNumber);
@@ -191,6 +209,4 @@ public class TelnyxExample {
         });
 
     }
-
-
 }
