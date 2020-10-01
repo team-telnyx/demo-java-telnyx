@@ -14,20 +14,21 @@ import com.main.model.SearchNumbersResponse;
 import com.main.model.MessageSendRequest;
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.Configuration;
-import com.telnyx.sdk.models.CallInitiated;
-import com.telnyx.sdk.models.CallInitiatedEvent;
-import com.telnyx.sdk.models.OutboundMessage;
+import com.telnyx.sdk.models.*;
 import com.telnyx.sdk.models.OutboundMessage.EventTypeEnum;
-import com.telnyx.sdk.models.OutboundMessageEvent;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.main.MessagingController.sendMessage;
+import static com.main.MessagingProfilesController.*;
+import static com.main.MessagingProfilesController.getDetailedMessagingProfileMetrics;
+import static com.main.MessagingProfilesController.listMessagingProfileMetrics;
 import static com.main.NumbersController.orderNumber;
 import static com.main.NumbersController.reserveNumbers;
 import static com.main.NumbersController.searchNumbers;
@@ -142,6 +143,98 @@ public class TelnyxExample {
             res.type("application/json");
             return result;
         });
+
+        //Create a messaging profile
+        post("/messaging_profiles", (req, res) -> {
+            String json = req.body();
+            CreateMessagingProfileRequest createMessagingProfileRequest = new Gson().fromJson(json, CreateMessagingProfileRequest.class);
+            String result = createMessagingProfile(createMessagingProfileRequest);
+            res.type("application/json");
+            return result;
+        });
+
+        //Get the metrics of a messaging profile
+        get("/messaging_profiles/:id/metrics", (req, res) -> {
+            String result = getDetailedMessagingProfileMetrics(req.params("id"), req.queryParams("time_frame"));
+            res.type("application/json");
+            return result;
+        });
+
+        //Get all messaging profile metrics
+        get("/messaging_profile_metrics", (req, res) -> {
+            Integer pageNumber = req.queryParams("page[number]") != null ? Integer.valueOf(req.queryParams("page[number]")) : null;
+            Integer pageSize = req.queryParams("page[size]") != null ? Integer.valueOf(req.queryParams("page[size]")) : null;
+            String result = listMessagingProfileMetrics(pageNumber, pageSize, req.queryParams("id"), req.queryParams("time_frame"));
+            res.type("application/json");
+            return result;
+        });
+
+        //Delete a messaging profile
+        delete("/messaging_profiles/:id", (req, res) -> {
+            String result = deleteMessagingProfile(req.params("id"));
+            res.type("application/json");
+            return result;
+        });
+
+        //Update messaging profile
+        patch("/messaging_profiles/:id", (req, res) -> {
+            String json = req.body();
+            UpdateMessagingProfileRequest updateMessagingProfileRequest = new Gson().fromJson(json, UpdateMessagingProfileRequest.class);
+            String result = updateMessagingProfile(req.params("id"), updateMessagingProfileRequest);
+            res.type("application/json");
+            return result;
+        });
+
+        //Enable number pool on a messaging profile
+        post("/messaging_profiles/:id/enableNumberPool", (req, res) -> {
+            String json = req.body();
+            NumberPoolSettings numberPoolSettings = new NumberPoolSettings()
+                    .geomatch(false)
+                    .longCodeWeight(BigDecimal.valueOf(2))
+                    .skipUnhealthy(false)
+                    .stickySender(true)
+                    .tollFreeWeight(BigDecimal.valueOf(10));
+            UpdateMessagingProfileRequest updateMessagingProfileRequest = new UpdateMessagingProfileRequest().numberPoolSettings(numberPoolSettings);
+            String result = updateMessagingProfile(req.params("id"), updateMessagingProfileRequest);
+            res.type("application/json");
+            return result;
+        });
+
+        //Disable a messaging profile
+        post("/messaging_profiles/:id/disable", (req, res) -> {
+            String json = req.body();
+            UpdateMessagingProfileRequest updateMessagingProfileRequest = new UpdateMessagingProfileRequest().enabled(false);
+            String result = updateMessagingProfile(req.params("id"), updateMessagingProfileRequest);
+            res.type("application/json");
+            return result;
+        });
+
+        //List all phone numbers associated with a messaging profile
+        get("/messaging_profiles/:id/phone_numbers", (req, res) -> {
+            Integer pageNumber = req.queryParams("page[number]") != null ? Integer.valueOf(req.queryParams("page[number]")) : null;
+            Integer pageSize = req.queryParams("page[size]") != null ? Integer.valueOf(req.queryParams("page[size]")) : null;
+            String result = getMessagingProfilePhoneNumbers(req.params("id"), pageNumber, pageSize);
+            res.type("application/json");
+            return result;
+        });
+
+        //TODO: Figure out how to make updates that set properties to null
+        //Disable number pool on a messaging profile
+        post("/messaging_profiles/:id/disableNumberPool", (req, res) -> {
+            String json = req.body();
+            String result = disableNumberPool(req.params("id"));
+            res.type("application/json");
+            return result;
+        });
+
+        //Retrieve a messaging profile
+        get("/messaging_profiles/:id", (req, res) -> {
+            String json = req.body();
+            String result = getMessagingProfile(req.params("id"));
+            res.type("application/json");
+            return result;
+        });
+
 
     }
 
