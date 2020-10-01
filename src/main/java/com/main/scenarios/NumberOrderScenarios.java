@@ -22,7 +22,7 @@ public class NumberOrderScenarios implements TestScenario {
         CreateNumberOrderResponse response = new CreateNumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
-            phoneNumbers = getPhoneNumbersForCountry(countryCode, 1);
+            phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -32,12 +32,12 @@ public class NumberOrderScenarios implements TestScenario {
             response = apiInstance.createNumberOrder(
                     new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
-            e.printStackTrace();
-            //TODO: Assert false
+            assert false;
         }
 
         //then
-        //TODO: check the actual and expected and assert equality
+        assert response != null;
+        assert response.getData() != null;
     }
 
     public void order_5_US_phone_numbers() {
@@ -46,7 +46,7 @@ public class NumberOrderScenarios implements TestScenario {
         CreateNumberOrderResponse response = new CreateNumberOrderResponse();
         List<PhoneNumber> phoneNumbers = new ArrayList<>();
         try {
-            List<String> numbers = getPhoneNumbersForCountry(countryCode, 5);
+            List<String> numbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 5);
 
             phoneNumbers = numbers.stream().map(number ->
                     new PhoneNumber().phoneNumber(number)).collect(Collectors.toList());
@@ -59,12 +59,12 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             response = apiInstance.createNumberOrder(new NumberOrder().phoneNumbers(phoneNumbers));
         } catch (Exception e) {
-            e.printStackTrace();
-            //TODO: Assert false
+            assert false;
         }
 
         //then
-        //TODO: check the actual and expected and assert equality
+        assert response != null;
+        assert response.getData() != null;
     }
 
     public void order_a_spanish_phone_number() {
@@ -73,7 +73,7 @@ public class NumberOrderScenarios implements TestScenario {
         CreateNumberOrderResponse response = new CreateNumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
-            phoneNumbers = getPhoneNumbersForCountry(countryCode, 1);
+            phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,20 +84,21 @@ public class NumberOrderScenarios implements TestScenario {
                     new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             e.printStackTrace();
-            //TODO: Assert false
+            assert false;
         }
 
         //then
-        //TODO: check the actual and expected and assert equality
+        assert response != null;
+        assert response.getData() != null;
     }
 
     public void search_and_then_order_a_number_from_paris() {
         //given
-        String countryCode = "ES";
+        String city = "paris";
         CreateNumberOrderResponse response = new CreateNumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
-            phoneNumbers = getPhoneNumbersForCountry(countryCode, 1);
+            phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, city, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,22 +108,23 @@ public class NumberOrderScenarios implements TestScenario {
             response = apiInstance.createNumberOrder(
                     new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
-            e.printStackTrace();
-            //TODO: Assert false
+            assert false;
         }
 
         //then
-        //TODO: check the actual and expected and assert equality
+        assert response != null;
+        assert response.getData() != null;
     }
 
-    private List<String> getPhoneNumbersForCountry(String countryCode, int count) throws ApiException {
+
+    private List<String> getPhoneNumbersBasedOnLocation(String countryCode, String state, String city, int count) throws ApiException {
         ListAvailablePhoneNumbersResponse availablePhoneNumbers = new NumberSearchApi()
                 .listAvailablePhoneNumbers(
                         null,
                         null,
                         null,
-                        null,
-                        null,
+                        city,
+                        state,
                         countryCode,
                         null,
                         null,
@@ -142,6 +144,7 @@ public class NumberOrderScenarios implements TestScenario {
         order_a_US_phone_number();
         order_5_US_phone_numbers();
         order_a_spanish_phone_number();
+        search_and_then_order_a_number_from_paris();
 
     }
 }
