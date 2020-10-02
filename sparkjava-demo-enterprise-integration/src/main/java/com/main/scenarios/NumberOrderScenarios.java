@@ -1,25 +1,25 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiException;
-import io.swagger.client.api.NumberOrdersApi;
-import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.AvailablePhoneNumber;
-import io.swagger.client.model.CreateNumberOrderResponse;
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
-import io.swagger.client.model.NumberOrder;
-import io.swagger.client.model.PhoneNumber;
 
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.AvailablePhoneNumber;
+import com.telnyx.sdk.models.CreateNumberOrderRequest;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.models.NumberOrderResponse;
+import com.telnyx.sdk.models.PhoneNumber;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class NumberOrderScenarios implements TestScenario {
-    private NumberOrdersApi apiInstance = new NumberOrdersApi();
+    private final NumberOrdersApi apiInstance = new NumberOrdersApi();
 
     public void order_a_US_phone_number() {
         //given
         String countryCode = "US";
-        CreateNumberOrderResponse response = new CreateNumberOrderResponse();
+        NumberOrderResponse response = new NumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
@@ -30,7 +30,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
         }
@@ -43,7 +43,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void order_5_US_phone_numbers() {
         //given
         String countryCode = "US";
-        CreateNumberOrderResponse response = new CreateNumberOrderResponse();
+        NumberOrderResponse response = new NumberOrderResponse();
         List<PhoneNumber> phoneNumbers = new ArrayList<>();
         try {
             List<String> numbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 5);
@@ -57,7 +57,7 @@ public class NumberOrderScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.createNumberOrder(new NumberOrder().phoneNumbers(phoneNumbers));
+            response = apiInstance.createNumberOrder(new CreateNumberOrderRequest().phoneNumbers(phoneNumbers));
         } catch (Exception e) {
             assert false;
         }
@@ -70,7 +70,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void order_a_spanish_phone_number() {
         //given
         String countryCode = "ES";
-        CreateNumberOrderResponse response = new CreateNumberOrderResponse();
+        NumberOrderResponse response = new NumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
@@ -81,7 +81,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             e.printStackTrace();
             assert false;
@@ -95,7 +95,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void search_and_then_order_a_number_from_paris() {
         //given
         String city = "paris";
-        CreateNumberOrderResponse response = new CreateNumberOrderResponse();
+        NumberOrderResponse response = new NumberOrderResponse();
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, city, 1);
@@ -106,7 +106,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
         }

@@ -2,11 +2,12 @@ package com.main.scenarios;
 
 import com.google.gson.Gson;
 import com.main.model.SearchNumbersResponse;
-import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+
 
 public class NumberSearchScenarios implements TestScenario{
-    private NumberSearchApi apiInstance = new NumberSearchApi();
+    private final NumberSearchApi apiInstance = new NumberSearchApi();
 
     public void search_for_phone_numbers_in_the_us() {
         //given
