@@ -17,22 +17,18 @@ The full documentation and tutorial is available on [developers.telnyx.com](http
 You will need to set up:
 
 * [Telnyx Account](https://telnyx.com/sign-up?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link)
-* [Telnyx Phone Number](https://portal.telnyx.com/#/app/numbers/my-numbers?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link) enabled with:
-  * [Telnyx Call Control Application](https://portal.telnyx.com/#/app/call-control/applications?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link)
-  * [Telnyx Outbound Voice Profile](https://portal.telnyx.com/#/app/outbound-profiles?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link)
 * Ability to receive webhooks (with something like [ngrok](https://developers.telnyx.com/docs/v2/development/ngrok?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link))
 * [Java](https://developers.telnyx.com/docs/v2/development/dev-env-setup?lang=java&utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link) installed
 
-## What you can do
+## Demos
 
-* Send a text message and inspect the DLR response
-* Send a search request to look for available Numbers (limits to 2)
- * Pass an optional query parameter `reserve=true` to reserve the numbers
-* Create a phone number order
+| Demo                                                                             | Description                                                                                       |
+|:---------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------|
+| [sparkjava-demo-enterprise-integration](./sparkjava-demo-enterprise-integration) | A spark-java server that proxies requests to/from Telnyx with some higher level application logic |
 
 ## Usage
 
-The following environmental variables need to be set
+The following environmental variables need to be set for most demos in this repo
 
 | Variable            | Description                                                                                                                                              |
 |:--------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -51,117 +47,3 @@ TELNYX_API_KEY=
 TELNYX_PUBLIC_KEY=
 TENYX_APP_PORT=8000
 ```
-
-### Callback URLs For Telnyx Applications
-
-| Callback Type                    | URL                                        |
-|:---------------------------------|:-------------------------------------------|
-| Inbound Voice Callback           | `{ngrok-url}/Callbacks/Voice/Inbound`      |
-| Inbound Message Callback         | `{ngrok-url}/Callbacks/Messaging/Inbound`  |
-| Outbound Message Status Callback | `{ngrok-url}/Callbacks/Messaging/Outbound` |
-
-### Install
-
-Run the following commands to get started
-
-```
-$ git clone https://github.com/d-telnyx/demo-java-telnyx.git
-```
-
-### Ngrok
-
-This application is served on the port defined in the runtime environment (or in the `.env` file). Be sure to launch [ngrok](https://developers.telnyx.com/docs/v2/development/ngrok?utm_source=referral&utm_medium=github_referral&utm_campaign=cross-site-link) for that port
-
-```
-./ngrok http 8000
-```
-
-> Terminal should look _something_ like
-
-```
-ngrok by @inconshreveable                                                                                                                               (Ctrl+C to quit)
-
-Session Status                online
-Account                       Little Bobby Tables (Plan: Free)
-Version                       2.3.35
-Region                        United States (us)
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    http://your-url.ngrok.io -> http://localhost:8000
-Forwarding                    https://your-url.ngrok.io -> http://localhost:8000
-
-Connections                   ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
-```
-
-At this point you can point your application to generated ngrok URL + path  (Example: `http://{your-url}.ngrok.io/Callbacks/Voice/Inbound`).
-
-### Run
-
-Open your IDE and run the application
-
-## API Docs
-
-### Sending Messages
-
-Send a `POST` request to `http://{your-url}.ngrok.io/SendMessage` and the Server will proxy the request to your Telnyx account
-
-| Parameter | Description                  | Example         |
-|:----------|:-----------------------------|:----------------|
-| `to`      | The destination phone number | `+19198675309`  |
-| `from`    | The Telnyx phone number      | `+191976429067` |
-| `text`    | The actual message content   | `hello world 👋` |
-
-```http
-POST http://your-url.ngrok.io/SendMessage HTTP/1.1
-Content-Type: application/json; charset=utf-8
-
-{
-    "to": "+19198675309",
-    "from": "+191976429067",
-    "text": "hello world 👋"
-}
-```
-
-### Searching Phone numbers
-
-Send a `GET` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
-
-| Query Parameter | Description                                | Example   | Required |
-|:----------------|:-------------------------------------------|:----------|:---------|
-| `countryCode`   | The country searching                      | `US`      | True     |
-| `state`         | The Canadian Province or US State          | `NC`      | True     |
-| `city`          | The city                                   | `Raleigh` | True     |
-| `reserve`       | Boolean value to reserve the found numbers | `true`    | False    |
-
-⚠️ passing `reserve=true` will change the response payload from [availableNumbers response](https://developers.telnyx.com/docs/api/v2/numbers/Number-Search#listAvailablePhoneNumbers) to [reservation response](https://developers.telnyx.com/docs/api/v2/numbers/Number-Reservations#createNumberReservations)
-
-#### Example 1 of 2: Search Raleigh, NC phone numbers
-
-```http
-GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC HTTP/1.1
-```
-
-#### Example 2 of 2: Search **AND RESERVE** Raleigh, NC phone numbers
-
-```http
-GET http://your-url.ngrok.io/availableNumbers?countryCode=US&city=Raleigh&state=NC?reserve=true HTTP/1.1
-```
-
-### Ordering Phone numbers
-
-Send a `POST` request to `http://{your-url}.ngrok.io/availableNumbers` and the Server will proxy the request to your Telnyx account
-
-| Parameter     | Description                       | Example        |
-|:--------------|:----------------------------------|:---------------|
-| `phoneNumber` | The desired phone number to order | `+19198675309` |
-
-```http
-POST http://your-url.ngrok.io/availableNumbers HTTP/1.1
-Content-Type: application/json; charset=utf-8
-
-{
-  "phoneNumber": "+19198675309"
-}
-```
-
-## Next Steps
