@@ -31,9 +31,9 @@ public class NumberOrderScenarios implements TestScenario {
         //given
         String countryCode = "US";
         CreateNumberOrderResponse response = null;
-        List<String> phoneNumbers = new ArrayList<>();
+        String phoneNumber = null;
         try {
-            phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
+            phoneNumber = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1).get(0);
         } catch (Exception e) {
             assert false;
         }
@@ -41,7 +41,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(new NumberOrder()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumbers.get(0)))));
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
         } catch (Exception e) {
             assert false;
         }

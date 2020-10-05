@@ -205,7 +205,7 @@ public class TelnyxExample {
             return result;
         });
 
-        get("/tests/run", (req, res) -> {
+        post("/tests/run", (req, res) -> {
 //            NumberSearchScenarios numberSearchScenarios = new NumberSearchScenarios(defaultClient);
             NumberOrderScenarios numberOrderScenarios = new NumberOrderScenarios(defaultClient);
             NumberReservationScenarios numberReservationScenarios = new NumberReservationScenarios(defaultClient);
