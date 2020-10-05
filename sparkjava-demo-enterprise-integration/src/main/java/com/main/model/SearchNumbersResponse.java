@@ -1,6 +1,7 @@
 package com.main.model;
 
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+
 public class SearchNumbersResponse {
     public ListAvailablePhoneNumbersResponse apiResponse;
     public String json;
