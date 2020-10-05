@@ -5,6 +5,10 @@ import com.main.model.Dlr;
 import com.main.model.MessageSendRequest;
 import com.main.model.PhoneNumberOrderRequest;
 import com.main.model.SearchNumbersResponse;
+import com.main.scenarios.NumberConfigurationsScenarios;
+import com.main.scenarios.NumberOrderRegulatoryRequirementsScenarios;
+import com.main.scenarios.NumberOrderScenarios;
+import com.main.scenarios.NumberReservationScenarios;
 import com.main.scenarios.NumberSearchScenarios;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.client.ApiClient;
@@ -193,13 +197,6 @@ public class TelnyxExample {
             }
         });
 
-
-        get("/tests/run", (req, res) -> {
-            NumberSearchScenarios numberSearchScenarios = new NumberSearchScenarios();
-            numberSearchScenarios.runAllScenarios();
-            return null;
-        });
-
         post("/order", (req, res) -> {
             String json = req.body();
             PhoneNumberOrderRequest orderRequest = new Gson().fromJson(json, PhoneNumberOrderRequest.class);
@@ -208,5 +205,20 @@ public class TelnyxExample {
             return result;
         });
 
+        get("/tests/run", (req, res) -> {
+//            NumberSearchScenarios numberSearchScenarios = new NumberSearchScenarios(defaultClient);
+            NumberOrderScenarios numberOrderScenarios = new NumberOrderScenarios(defaultClient);
+            NumberReservationScenarios numberReservationScenarios = new NumberReservationScenarios(defaultClient);
+            NumberOrderRegulatoryRequirementsScenarios numberOrderRegulatoryRequirementsScenarios =
+                    new NumberOrderRegulatoryRequirementsScenarios(defaultClient);
+            NumberConfigurationsScenarios numberConfigurationsScenarios = new NumberConfigurationsScenarios(defaultClient);
+
+//            numberSearchScenarios.runAllScenarios();
+            numberOrderScenarios.runAllScenarios();
+            numberReservationScenarios.runAllScenarios();
+            numberOrderRegulatoryRequirementsScenarios.runAllScenarios();
+            numberConfigurationsScenarios.runAllScenarios();
+            return null;
+        });
     }
 }

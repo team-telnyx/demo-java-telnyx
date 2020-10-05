@@ -1,12 +1,16 @@
 package com.main.scenarios;
 
-import com.google.gson.Gson;
 import com.main.model.SearchNumbersResponse;
+import io.swagger.client.ApiClient;
 import io.swagger.client.api.NumberSearchApi;
 import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
 
-public class NumberSearchScenarios implements TestScenario{
-    private NumberSearchApi apiInstance = new NumberSearchApi();
+public class NumberSearchScenarios implements TestScenario {
+    private NumberSearchApi apiInstance;
+
+    public NumberSearchScenarios(ApiClient client) {
+        apiInstance = new NumberSearchApi(client);
+    }
 
     public void search_for_phone_numbers_in_the_us() {
         //given
@@ -42,12 +46,12 @@ public class NumberSearchScenarios implements TestScenario{
         //given
         //TODO: which area code? and what is the filter name
         String areaCode = "IL";
-        SearchNumbersResponse response = new SearchNumbersResponse();
+        SearchNumbersResponse response = null;
 
         //when
         ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-             availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
+            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
                     null,
                     null,
                     null,
@@ -73,7 +77,7 @@ public class NumberSearchScenarios implements TestScenario{
     public void search_for_phone_numbers_in_Canada() {
         //given
         String countryCode = "CA";
-        SearchNumbersResponse response = new SearchNumbersResponse();
+        SearchNumbersResponse response = null;
 
         //when
         ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
@@ -104,12 +108,11 @@ public class NumberSearchScenarios implements TestScenario{
     public void search_for_phone_numbers_in_spain() {
         //given
         String countryCode = "ES";
-        SearchNumbersResponse response = new SearchNumbersResponse();
+        ListAvailablePhoneNumbersResponse response = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-             availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
+            response = apiInstance.listAvailablePhoneNumbers(null,
                     null,
                     null,
                     null,
@@ -128,19 +131,18 @@ public class NumberSearchScenarios implements TestScenario{
         }
 
         //then
-        assert availablePhoneNumbers != null;
-        assert !availablePhoneNumbers.getData().isEmpty();
+        assert response != null;
+        assert !response.getData().isEmpty();
     }
 
     public void search_for_phone_numbers_that_begin_with_22() {
         //given
         String startsWith = "22";
-        SearchNumbersResponse response = new SearchNumbersResponse();
+        ListAvailablePhoneNumbersResponse response = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(
+            response = apiInstance.listAvailablePhoneNumbers(
                     startsWith,
                     null,
                     null,
@@ -160,20 +162,19 @@ public class NumberSearchScenarios implements TestScenario{
         }
 
         //then
-        assert availablePhoneNumbers != null;
-        assert !availablePhoneNumbers.getData().isEmpty();
+        assert response != null;
+        assert !response.getData().isEmpty();
     }
 
     public void search_for_100_phone_numbers_in_Chicago() {
         //given
         String state = "chi";
         int filterLimit = 100;
-        SearchNumbersResponse response = new SearchNumbersResponse();
+        ListAvailablePhoneNumbersResponse response = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
+            response = apiInstance.listAvailablePhoneNumbers(null,
                     null,
                     null,
                     null,
@@ -192,8 +193,8 @@ public class NumberSearchScenarios implements TestScenario{
         }
 
         //then
-        assert availablePhoneNumbers != null;
-        assert !availablePhoneNumbers.getData().isEmpty();
+        assert response != null;
+        assert !response.getData().isEmpty();
     }
 
     @Override
