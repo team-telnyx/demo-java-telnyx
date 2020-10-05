@@ -48,7 +48,7 @@ public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario 
             numberOrdersApiInstance.createNumberOrder(
                     new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when

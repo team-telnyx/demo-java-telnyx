@@ -35,7 +35,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
@@ -63,7 +63,7 @@ public class NumberOrderScenarios implements TestScenario {
                     new PhoneNumber().phoneNumber(number)).collect(Collectors.toList());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
@@ -86,7 +86,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
@@ -94,7 +94,7 @@ public class NumberOrderScenarios implements TestScenario {
             response = apiInstance.createNumberOrder(
                     new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
             assert false;
         }
 
@@ -111,7 +111,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, city, 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when

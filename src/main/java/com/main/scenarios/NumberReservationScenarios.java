@@ -28,7 +28,7 @@ public class NumberReservationScenarios implements TestScenario {
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
@@ -54,7 +54,7 @@ public class NumberReservationScenarios implements TestScenario {
                     new NumberReservation().addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumbers.get(0))));
             reservationId = numberReservationsResponse.getData().getId().toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
@@ -76,7 +76,7 @@ public class NumberReservationScenarios implements TestScenario {
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, null, 5);
         } catch (Exception e) {
-            e.printStackTrace();
+            assert false;
         }
 
         //when
