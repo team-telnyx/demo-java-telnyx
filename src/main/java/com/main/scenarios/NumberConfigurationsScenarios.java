@@ -3,6 +3,7 @@ package com.main.scenarios;
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.NumberConfigurationsApi;
+import io.swagger.client.model.CallForwarding;
 import io.swagger.client.model.CallRecording;
 import io.swagger.client.model.ListMessagingSettingsResponse;
 import io.swagger.client.model.ListPhoneNumberVoicesResponse;
