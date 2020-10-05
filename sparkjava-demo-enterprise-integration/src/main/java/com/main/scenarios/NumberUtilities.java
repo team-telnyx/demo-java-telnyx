@@ -1,12 +1,13 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiException;
-import io.swagger.client.api.NumberOrdersApi;
-import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.AvailablePhoneNumber;
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
-import io.swagger.client.model.NumberOrder;
-import io.swagger.client.model.PhoneNumber;
+
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.AvailablePhoneNumber;
+import com.telnyx.sdk.models.CreateNumberOrderRequest;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.models.PhoneNumber;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class NumberUtilities {
         NumberOrdersApi numberOrdersApi = new NumberOrdersApi();
         return numberOrdersApi
                 .createNumberOrder(
-                        new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
+                        new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
                 .getData().getId();
     }
 }

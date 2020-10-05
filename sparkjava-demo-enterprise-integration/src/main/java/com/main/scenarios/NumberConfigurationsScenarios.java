@@ -1,19 +1,20 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
-import io.swagger.client.api.NumberConfigurationsApi;
-import io.swagger.client.model.CallForwarding;
-import io.swagger.client.model.CallRecording;
-import io.swagger.client.model.ListMessagingSettingsResponse;
-import io.swagger.client.model.ListPhoneNumberVoicesResponse;
-import io.swagger.client.model.ListPhoneNumbersResponse;
-import io.swagger.client.model.MessagingPhoneNumberUpdate;
-import io.swagger.client.model.PhoneNumberEnableEmergency;
-import io.swagger.client.model.PhoneNumberUpdate;
-import io.swagger.client.model.RetrieveMessagingSettingsResponse;
-import io.swagger.client.model.RetrievePhoneNumberVoiceResponse;
-import io.swagger.client.model.VoiceUpdate;
+
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.apis.NumberConfigurationsApi;
+import com.telnyx.sdk.models.CallRecording;
+import com.telnyx.sdk.models.ListMessagingSettingsResponse;
+import com.telnyx.sdk.models.ListPhoneNumbersResponse;
+import com.telnyx.sdk.models.ListPhoneNumbersWithVoiceSettingsResponse;
+import com.telnyx.sdk.models.PhoneNumberEnableEmergency;
+import com.telnyx.sdk.models.PhoneNumberEnableEmergencyRequest;
+import com.telnyx.sdk.models.RetrieveMessagingSettingsResponse;
+import com.telnyx.sdk.models.RetrievePhoneNumberVoiceResponse;
+import com.telnyx.sdk.models.UpdatePhoneNumberMessagingSettingsRequest;
+import com.telnyx.sdk.models.UpdatePhoneNumberRequest;
+import com.telnyx.sdk.models.UpdatePhoneNumberVoiceSettingsRequest;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.findPhoneNumbers(
+            response = apiInstance.listPhoneNumbers(
                     0,
                     1000,
                     null,
@@ -68,7 +69,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.findPhoneNumbers(
+            response = apiInstance.listPhoneNumbers(
                     0,
                     1,
                     null,
@@ -91,10 +92,10 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
     public void view_voice_settings_of_all_phone_numbers() {
         //given
-        ListPhoneNumberVoicesResponse response = null;
+        ListPhoneNumbersWithVoiceSettingsResponse response = null;
         //when
         try {
-            response = apiInstance.findPhoneNumberVoices(
+            response = apiInstance.listPhoneNumbersWithVoiceSettings(
                     0,
                     100,
                     null,
@@ -124,7 +125,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.retrievePhoneNumberVoice(phoneNumberId.toString());
+            response = apiInstance.retrievePhoneNumberWithVoiceSettings(phoneNumberId.toString());
         } catch (ApiException e) {
             assert false;
         }
@@ -146,8 +147,8 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.updatePhoneNumberVoice(
-                    new VoiceUpdate().callRecording(new CallRecording().inboundCallRecordingEnabled(true)),
+            response = apiInstance.updatePhoneNumberWithVoiceSettings(
+                    new UpdatePhoneNumberVoiceSettingsRequest().callRecording(new CallRecording().inboundCallRecordingEnabled(true)),
                     phoneNumberId.toString()
             );
         } catch (ApiException e) {
@@ -176,7 +177,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.enableEmergencyPhoneNumber(new PhoneNumberEnableEmergency(), phoneNumberId.toString());
+            response = apiInstance.enableEmergencyPhoneNumber(new PhoneNumberEnableEmergencyRequest(), phoneNumberId.toString());
         } catch (ApiException e) {
             assert false;
         }
@@ -192,7 +193,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.listPhoneNumberMessagingSettings();
+            response = apiInstance.listPhoneNumbersWithMessagingSettings();
         } catch (ApiException e) {
             assert false;
         }
@@ -216,7 +217,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.retrievePhoneNumberMessagingSettings(phoneNumberId.toString());
+            response = apiInstance.retrievePhoneNumberWithMessagingSettings(phoneNumberId.toString());
         } catch (ApiException e) {
             assert false;
         }
@@ -240,7 +241,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.updatePhoneNumberMessagingSettings(new MessagingPhoneNumberUpdate().messagingProfileId(targetMessagingProfileId), phoneNumberId.toString());
+            response = apiInstance.updatePhoneNumberWithMessagingSettings(new UpdatePhoneNumberMessagingSettingsRequest().messagingProfileId(targetMessagingProfileId), phoneNumberId.toString());
         } catch (ApiException e) {
             assert false;
         }
@@ -256,7 +257,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.findPhoneNumbers(
+            response = apiInstance.listPhoneNumbers(
                     1,
                     10,
                     null,
@@ -283,7 +284,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.findPhoneNumbers(
+            response = apiInstance.listPhoneNumbers(
                     0,
                     2,
                     null,
@@ -311,7 +312,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
         try {
             String phoneNumber = getPhoneNumbersBasedOnLocation(null, null, null, 1).get(0);
             UUID phoneNumberId = orderNumber(phoneNumber);
-            apiInstance.updatePhoneNumber(new PhoneNumberUpdate().tags(Collections.singletonList(tag)), phoneNumberId.toString());
+            apiInstance.updatePhoneNumber(new UpdatePhoneNumberRequest().tags(Collections.singletonList(tag)), phoneNumberId.toString());
         } catch (ApiException e) {
             assert false;
         }
@@ -319,7 +320,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.findPhoneNumbers(
+            response = apiInstance.listPhoneNumbers(
                     0,
                     2,
                     tag,

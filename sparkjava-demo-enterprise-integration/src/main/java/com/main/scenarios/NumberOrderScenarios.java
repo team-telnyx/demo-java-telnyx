@@ -1,12 +1,13 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
-import io.swagger.client.api.NumberOrdersApi;
-import io.swagger.client.model.CreateNumberOrderResponse;
-import io.swagger.client.model.ListNumberOrdersResponse;
-import io.swagger.client.model.NumberOrder;
-import io.swagger.client.model.PhoneNumber;
+
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.models.CreateNumberOrderRequest;
+import com.telnyx.sdk.models.ListNumberOrdersResponse;
+import com.telnyx.sdk.models.NumberOrderResponse;
+import com.telnyx.sdk.models.PhoneNumber;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -30,7 +31,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void order_a_US_phone_number() {
         //given
         String countryCode = "US";
-        CreateNumberOrderResponse response = null;
+        NumberOrderResponse response = null;
         String phoneNumber = null;
         try {
             phoneNumber = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1).get(0);
@@ -40,7 +41,7 @@ public class NumberOrderScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.createNumberOrder(new NumberOrder()
+            response = apiInstance.createNumberOrder(new CreateNumberOrderRequest()
                     .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
         } catch (Exception e) {
             assert false;
@@ -54,7 +55,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void order_5_US_phone_numbers() {
         //given
         String countryCode = "US";
-        CreateNumberOrderResponse response = null;
+        NumberOrderResponse response = null;
         List<PhoneNumber> phoneNumbers = new ArrayList<>();
         try {
             List<String> numbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 5);
@@ -68,7 +69,7 @@ public class NumberOrderScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.createNumberOrder(new NumberOrder().phoneNumbers(phoneNumbers));
+            response = apiInstance.createNumberOrder(new CreateNumberOrderRequest().phoneNumbers(phoneNumbers));
         } catch (Exception e) {
             assert false;
         }
@@ -81,7 +82,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void order_a_spanish_phone_number() {
         //given
         String countryCode = "ES";
-        CreateNumberOrderResponse response = null;
+        NumberOrderResponse response = null;
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
@@ -92,7 +93,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
             assert false;
@@ -106,7 +107,7 @@ public class NumberOrderScenarios implements TestScenario {
     public void search_and_then_order_a_number_from_paris() {
         //given
         String city = "paris";
-        CreateNumberOrderResponse response = null;
+        NumberOrderResponse response = null;
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, city, 1);
@@ -117,7 +118,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = apiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
         }

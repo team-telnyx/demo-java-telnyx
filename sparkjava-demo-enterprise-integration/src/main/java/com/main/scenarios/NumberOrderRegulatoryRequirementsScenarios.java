@@ -1,13 +1,13 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
-import io.swagger.client.api.NumberOrderRegulatoryRequirementsApi;
-import io.swagger.client.api.NumberOrdersApi;
-import io.swagger.client.model.ListNumberOrderRegulatoryRequirementsResponse;
-import io.swagger.client.model.ListPhoneNumberRegulatoryRequirementsResponse;
-import io.swagger.client.model.NumberOrder;
-import io.swagger.client.model.PhoneNumber;
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.ApiException;
+import com.telnyx.sdk.apis.NumberOrderRegulatoryRequirementsApi;
+import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.models.CreateNumberOrderRequest;
+import com.telnyx.sdk.models.ListNumberOrderRegulatoryRequirementsResponse;
+import com.telnyx.sdk.models.ListPhoneNumberRegulatoryRequirementsResponse;
+import com.telnyx.sdk.models.PhoneNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario 
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
             NumberOrdersApi numberOrdersApiInstance = new NumberOrdersApi();
             numberOrdersApiInstance.createNumberOrder(
-                    new NumberOrder().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
         }

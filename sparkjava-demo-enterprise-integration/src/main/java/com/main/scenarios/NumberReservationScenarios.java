@@ -1,11 +1,11 @@
 package com.main.scenarios;
 
-import io.swagger.client.ApiClient;
-import io.swagger.client.api.NumberReservationsApi;
-import io.swagger.client.model.CreateNumberReservationsResponse;
-import io.swagger.client.model.NumberReservation;
-import io.swagger.client.model.ReservedPhoneNumber;
-import io.swagger.client.model.RetrieveNumberReservationResponse;
+
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.apis.NumberReservationsApi;
+import com.telnyx.sdk.models.CreateNumberReservationRequest;
+import com.telnyx.sdk.models.NumberReservationResponse;
+import com.telnyx.sdk.models.ReservedPhoneNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class NumberReservationScenarios implements TestScenario {
     public void reserve_a_US_phone_number() {
         //given
         String countryCode = "US";
-        CreateNumberReservationsResponse response = null;
+        NumberReservationResponse response = null;
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
@@ -33,8 +33,8 @@ public class NumberReservationScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.createNumberReservations(
-                    new NumberReservation().addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumbers.get(0))));
+            response = apiInstance.createNumberReservation(
+                    new CreateNumberReservationRequest().addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumbers.get(0))));
         } catch (Exception e) {
             assert false;
         }
@@ -46,12 +46,12 @@ public class NumberReservationScenarios implements TestScenario {
 
     public void extend_the_reservation_of_a_phone_number() {
         //given
-        RetrieveNumberReservationResponse response = null;
+        NumberReservationResponse response = null;
         String reservationId = null;
         try {
             List<String> phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, null, 1);
-            CreateNumberReservationsResponse numberReservationsResponse = apiInstance.createNumberReservations(
-                    new NumberReservation().addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumbers.get(0))));
+            NumberReservationResponse numberReservationsResponse = apiInstance.createNumberReservation(
+                    new CreateNumberReservationRequest().addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumbers.get(0))));
             reservationId = numberReservationsResponse.getData().getId().toString();
         } catch (Exception e) {
             assert false;
@@ -71,7 +71,7 @@ public class NumberReservationScenarios implements TestScenario {
 
     public void reserve_5_phone_numbers() {
         //given
-        CreateNumberReservationsResponse response = null;
+        NumberReservationResponse response = null;
         List<String> phoneNumbers = new ArrayList<>();
         try {
             phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, null, 5);
@@ -84,8 +84,8 @@ public class NumberReservationScenarios implements TestScenario {
             List<ReservedPhoneNumber> reservedPhoneNumbers = phoneNumbers.stream()
                     .map(phoneNumber -> new ReservedPhoneNumber().phoneNumber(phoneNumber))
                     .collect(Collectors.toList());
-            response = apiInstance.createNumberReservations(
-                    new NumberReservation().phoneNumbers(reservedPhoneNumbers));
+            response = apiInstance.createNumberReservation(
+                    new CreateNumberReservationRequest().phoneNumbers(reservedPhoneNumbers));
         } catch (Exception e) {
             assert false;
         }

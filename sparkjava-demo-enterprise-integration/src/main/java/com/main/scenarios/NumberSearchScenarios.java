@@ -1,9 +1,9 @@
 package com.main.scenarios;
 
 import com.main.model.SearchNumbersResponse;
-import io.swagger.client.ApiClient;
-import io.swagger.client.api.NumberSearchApi;
-import io.swagger.client.model.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.ApiClient;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
 
 public class NumberSearchScenarios implements TestScenario {
     private NumberSearchApi apiInstance;
