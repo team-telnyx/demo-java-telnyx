@@ -4,6 +4,8 @@ package com.main.scenarios;
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
 import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.apis.NumberSearchApi;
+import com.telnyx.sdk.models.AvailablePhoneNumber;
 import com.telnyx.sdk.models.CreateNumberOrderRequest;
 import com.telnyx.sdk.models.ListNumberOrdersResponse;
 import com.telnyx.sdk.models.NumberOrderResponse;
@@ -15,17 +17,16 @@ import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.main.scenarios.NumberUtilities.getPhoneNumbersBasedOnLocation;
-import static com.main.scenarios.NumberUtilities.orderNumber;
-
 public class NumberOrderScenarios implements TestScenario {
-    private NumberOrdersApi apiInstance;
+    private NumberOrdersApi numberOrderApi;
+    private NumberSearchApi numberSearchApi;
 
     public NumberOrderScenarios(ApiClient client) {
-        apiInstance = new NumberOrdersApi(client);
+        numberSearchApi = new NumberSearchApi(client);
+        numberOrderApi = new NumberOrdersApi(client);
     }
 
     public void order_a_US_phone_number() {
@@ -34,15 +35,23 @@ public class NumberOrderScenarios implements TestScenario {
         NumberOrderResponse response = null;
         String phoneNumber = null;
         try {
-            phoneNumber = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1).get(0);
+            phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .filterLimit(1)
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
         } catch (Exception e) {
             assert false;
         }
 
         //when
         try {
-            response = apiInstance.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
+            response = numberOrderApi.createNumberOrder(
+                    new CreateNumberOrderRequest()
+                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -58,18 +67,24 @@ public class NumberOrderScenarios implements TestScenario {
         NumberOrderResponse response = null;
         List<PhoneNumber> phoneNumbers = new ArrayList<>();
         try {
-            List<String> numbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 5);
-
-            phoneNumbers = numbers.stream().map(number ->
-                    new PhoneNumber().phoneNumber(number)).collect(Collectors.toList());
-
+            phoneNumbers = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .filterLimit(5)
+                    .execute()
+                    .getData())
+                    .stream()
+                    .map(AvailablePhoneNumber::getPhoneNumber)
+                    .map(number -> new PhoneNumber().phoneNumber(number))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             assert false;
         }
 
         //when
         try {
-            response = apiInstance.createNumberOrder(new CreateNumberOrderRequest().phoneNumbers(phoneNumbers));
+            response = numberOrderApi.createNumberOrder(
+                    new CreateNumberOrderRequest().phoneNumbers(phoneNumbers))
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -83,17 +98,25 @@ public class NumberOrderScenarios implements TestScenario {
         //given
         String countryCode = "ES";
         NumberOrderResponse response = null;
-        List<String> phoneNumbers = new ArrayList<>();
+        String phoneNumber = null;
         try {
-            phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
+            phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .filterLimit(1)
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
         } catch (Exception e) {
             assert false;
         }
 
         //when
         try {
-            response = apiInstance.createNumberOrder(
-                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+            response = numberOrderApi.createNumberOrder(
+                    new CreateNumberOrderRequest()
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
+                    .execute();
         } catch (Exception e) {
             assert false;
             assert false;
@@ -108,17 +131,24 @@ public class NumberOrderScenarios implements TestScenario {
         //given
         String city = "paris";
         NumberOrderResponse response = null;
-        List<String> phoneNumbers = new ArrayList<>();
+        String phoneNumber = null;
         try {
-            phoneNumbers = getPhoneNumbersBasedOnLocation(null, null, city, 1);
+            phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterLocality(city)
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
         } catch (Exception e) {
             assert false;
         }
 
         //when
         try {
-            response = apiInstance.createNumberOrder(
-                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+            response = numberOrderApi.createNumberOrder(
+                    new CreateNumberOrderRequest()
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -140,8 +170,17 @@ public class NumberOrderScenarios implements TestScenario {
         //given
         ListNumberOrdersResponse response = null;
         try {
-            String phoneNumber = getPhoneNumbersBasedOnLocation(null, null, null, 1).get(0);
-            UUID phoneNumberId = orderNumber(phoneNumber);
+            String phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterLimit(1)
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
+
+            numberOrderApi.createNumberOrder(
+                    new CreateNumberOrderRequest()
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
+                    .execute();
         } catch (ApiException e) {
             assert false;
         }
@@ -151,14 +190,10 @@ public class NumberOrderScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.listNumberOrders(
-                    null,
-                    startOfToday.toString(),
-                    endOfToday.toString(),
-                    null,
-                    null,
-                    null
-            );
+            response = numberOrderApi.listNumberOrders()
+                    .filterCreatedAtGt(startOfToday.toString())
+                    .filterCreatedAtLt(endOfToday.toString())
+                    .execute();
         } catch (ApiException e) {
             assert false;
         }

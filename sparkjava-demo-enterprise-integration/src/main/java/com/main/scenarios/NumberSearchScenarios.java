@@ -1,6 +1,5 @@
 package com.main.scenarios;
 
-import com.main.model.SearchNumbersResponse;
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.apis.NumberSearchApi;
 import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
@@ -15,56 +14,32 @@ public class NumberSearchScenarios implements TestScenario {
     public void search_for_phone_numbers_in_the_us() {
         //given
         String countryCode = "US";
+        ListAvailablePhoneNumbersResponse response = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    countryCode,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            response = apiInstance.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
 
         //then
-        assert availablePhoneNumbers != null;
-        assert !availablePhoneNumbers.getData().isEmpty();
+        assert response != null;
+        assert !response.getData().isEmpty();
     }
 
     public void search_for_phone_numbers_by_area_code() {
         //given
-        //TODO: which area code? and what is the filter name
         String areaCode = "IL";
-        SearchNumbersResponse response = null;
+        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
-                    null,
-                    null,
-                    null,
-                    areaCode,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers()
+                    .filterAdministrativeArea(areaCode)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -77,25 +52,13 @@ public class NumberSearchScenarios implements TestScenario {
     public void search_for_phone_numbers_in_Canada() {
         //given
         String countryCode = "CA";
-        SearchNumbersResponse response = null;
+        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
 
         //when
-        ListAvailablePhoneNumbersResponse availablePhoneNumbers = null;
         try {
-            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    countryCode,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            availablePhoneNumbers = apiInstance.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -112,20 +75,9 @@ public class NumberSearchScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.listAvailablePhoneNumbers(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    countryCode,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            response = apiInstance.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -142,21 +94,9 @@ public class NumberSearchScenarios implements TestScenario {
 
         //when
         try {
-            response = apiInstance.listAvailablePhoneNumbers(
-                    startsWith,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            response = apiInstance.listAvailablePhoneNumbers()
+                    .filterPhoneNumberStartsWith(startsWith)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
@@ -168,26 +108,16 @@ public class NumberSearchScenarios implements TestScenario {
 
     public void search_for_100_phone_numbers_in_Chicago() {
         //given
-        String state = "chi";
-        int filterLimit = 100;
+        String city = "chi";
+        int limit = 100;
         ListAvailablePhoneNumbersResponse response = null;
 
         //when
         try {
-            response = apiInstance.listAvailablePhoneNumbers(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    filterLimit,
-                    null,
-                    null,
-                    null);
+            response = apiInstance.listAvailablePhoneNumbers()
+                    .filterLocality(city)
+                    .filterLimit(limit)
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
