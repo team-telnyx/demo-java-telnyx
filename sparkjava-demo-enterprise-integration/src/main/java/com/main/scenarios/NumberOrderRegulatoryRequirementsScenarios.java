@@ -4,21 +4,24 @@ import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
 import com.telnyx.sdk.apis.NumberOrderRegulatoryRequirementsApi;
 import com.telnyx.sdk.apis.NumberOrdersApi;
+import com.telnyx.sdk.apis.NumberSearchApi;
 import com.telnyx.sdk.models.CreateNumberOrderRequest;
 import com.telnyx.sdk.models.ListNumberOrderRegulatoryRequirementsResponse;
 import com.telnyx.sdk.models.ListPhoneNumberRegulatoryRequirementsResponse;
 import com.telnyx.sdk.models.PhoneNumber;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.main.scenarios.NumberUtilities.getPhoneNumbersBasedOnLocation;
+import java.util.Collections;
+import java.util.Objects;
 
 public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario {
-    private NumberOrderRegulatoryRequirementsApi apiInstance;
+    private NumberOrderRegulatoryRequirementsApi numberOrderRegulatoryRequirementsApi;
+    private NumberSearchApi numberSearchApi;
+    private NumberOrdersApi numberOrdersApi;
 
     public NumberOrderRegulatoryRequirementsScenarios(ApiClient client) {
-        apiInstance = new NumberOrderRegulatoryRequirementsApi(client);
+        numberOrderRegulatoryRequirementsApi = new NumberOrderRegulatoryRequirementsApi(client);
+        numberSearchApi = new NumberSearchApi(client);
+        numberOrdersApi = new NumberOrdersApi(client);
     }
 
     public void get_all_regulatory_requirements() {
@@ -27,7 +30,8 @@ public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario 
 
         //when
         try {
-            response = apiInstance.listNumberOrderRegulatoryRequirements(null, null, null);
+            response = numberOrderRegulatoryRequirementsApi.listNumberOrderRegulatoryRequirements()
+                    .execute();
         } catch (ApiException e) {
             assert false;
         }
@@ -41,19 +45,29 @@ public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario 
         //given
         ListPhoneNumberRegulatoryRequirementsResponse response = null;
         String countryCode = "ES";
-        List<String> phoneNumbers = new ArrayList<>();
+        String phoneNumber = null;
         try {
-            phoneNumbers = getPhoneNumbersBasedOnLocation(countryCode, null, null, 1);
-            NumberOrdersApi numberOrdersApiInstance = new NumberOrdersApi();
-            numberOrdersApiInstance.createNumberOrder(
-                    new CreateNumberOrderRequest().addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumbers.get(0))));
+            phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .filterLimit(1)
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
+
+            numberOrdersApi.createNumberOrder(
+                    new CreateNumberOrderRequest()
+                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
+                    .execute();
         } catch (Exception e) {
             assert false;
         }
 
         //when
         try {
-            response = apiInstance.listPhoneNumberRegulatoryRequirements(phoneNumbers);
+            response = numberOrderRegulatoryRequirementsApi.listPhoneNumberRegulatoryRequirements()
+                    .filterPhoneNumber(Collections.singletonList(phoneNumber))
+                    .execute();
         } catch (ApiException e) {
             assert false;
         }

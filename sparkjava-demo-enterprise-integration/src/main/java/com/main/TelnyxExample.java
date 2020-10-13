@@ -61,7 +61,7 @@ public class TelnyxExample {
     public static final String TELNYX_PHONE_NUMBER = "+19196468161";
 
     // Instantiate the client
-    static ApiClient defaultClient = Configuration.getDefaultApiClient();
+    public static ApiClient defaultClient = Configuration.getDefaultApiClient();
 
     public static void main(String[] args) {
 
@@ -363,7 +363,7 @@ public class TelnyxExample {
                     new NumberOrderRegulatoryRequirementsScenarios(defaultClient);
             NumberConfigurationsScenarios numberConfigurationsScenarios = new NumberConfigurationsScenarios(defaultClient);
 
-//            numberSearchScenarios.runAllScenarios();
+            numberSearchScenarios.runAllScenarios();
             numberOrderScenarios.runAllScenarios();
             numberReservationScenarios.runAllScenarios();
             numberOrderRegulatoryRequirementsScenarios.runAllScenarios();
