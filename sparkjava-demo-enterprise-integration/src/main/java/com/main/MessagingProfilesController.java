@@ -15,7 +15,7 @@ public class MessagingProfilesController {
         MessagingProfilesApi apiInstance = new MessagingProfilesApi(defaultClient);
 
         try {
-            MessagingProfileResponse createMessagingProfileResponse = apiInstance.createMessagingProfile(request);
+            MessagingProfileResponse createMessagingProfileResponse = apiInstance.createMessagingProfile(request).execute();
             UUID id = createMessagingProfileResponse.getData().getId();
             System.out.printf("Created messaging profile with ID: %s\n", id);
             return new Gson().toJson(createMessagingProfileResponse);
@@ -34,7 +34,8 @@ public class MessagingProfilesController {
         }
 
         try {
-            RetrieveMessagingProfileMetricsResponse messagingProfileDetailedMetrics = apiInstance.getMessagingProfileDetailedMetrics(UUID.fromString(id), timeFrame);
+            RetrieveMessagingProfileMetricsResponse messagingProfileDetailedMetrics = apiInstance.getMessagingProfileDetailedMetrics(UUID.fromString(id))
+                    .timeFrame(timeFrame).execute();
             return new Gson().toJson(messagingProfileDetailedMetrics);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagingProfilesApi#getMessagingProfileMetrics");
@@ -53,7 +54,12 @@ public class MessagingProfilesController {
         UUID uuid = id != null ? UUID.fromString(id) : null;
 
         try {
-            ListMessagingProfileMetricsResponse listMessagingProfileMetricsResponse = apiInstance.listMessagingProfileMetrics(pageNumber, pageSize, uuid, timeFrame);
+            ListMessagingProfileMetricsResponse listMessagingProfileMetricsResponse = apiInstance.listMessagingProfileMetrics()
+                    .pageNumber(pageNumber)
+                    .pageSize(pageSize)
+                    .id(uuid)
+                    .timeFrame(timeFrame)
+                    .execute();
             return new Gson().toJson(listMessagingProfileMetricsResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagingProfilesApi#listMessagingProfileMetrics");
@@ -74,7 +80,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.deleteMessagingProfile(UUID.fromString(id));
+            MessagingProfileResponse messagingProfileResponse = apiInstance.deleteMessagingProfile(UUID.fromString(id)).execute();
             System.out.printf("Deleted messaging profile with ID: %s\n", id);
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -96,7 +102,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(request, UUID.fromString(id));
+            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), request).execute();
             System.out.printf("Updated messaging profile with ID: %s\n", messagingProfileResponse.getData().getId());
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -118,7 +124,8 @@ public class MessagingProfilesController {
         }
 
         try {
-            ListMessagingProfilePhoneNumbersResponse listMessagingProfilePhoneNumbersResponse = apiInstance.listMessagingProfilePhoneNumbers(UUID.fromString(id), pageNumber, pageSize);
+            ListMessagingProfilePhoneNumbersResponse listMessagingProfilePhoneNumbersResponse = apiInstance.listMessagingProfilePhoneNumbers(UUID.fromString(id))
+            .pageNumber(pageNumber).pageSize(pageSize).execute();
             return new Gson().toJson(listMessagingProfilePhoneNumbersResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagingProfilesApi#listMessagingProfilePhoneNumbers");
@@ -149,10 +156,10 @@ public class MessagingProfilesController {
 
         try {
             //TODO: This call isn't working - maybe the SDK is out of sync with the production API
-            MessagingProfile existingMessagingProfile = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).getData();
+            MessagingProfile existingMessagingProfile = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).execute().getData();
 
             UpdateMessagingProfileRequest updateMessagingProfileRequest = new UpdateMessagingProfileRequest()
-                    .enabled(existingMessagingProfile.isEnabled())
+                    .enabled(existingMessagingProfile.getEnabled())
                     .name(existingMessagingProfile.getName())
                     .numberPoolSettings(null)
                     .urlShortenerSettings(existingMessagingProfile.getUrlShortenerSettings())
@@ -162,7 +169,7 @@ public class MessagingProfilesController {
                     .webhookUrl(existingMessagingProfile.getWebhookUrl())
                     .whitelistedDestinations(existingMessagingProfile.getWhitelistedDestinations());
 
-            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(updateMessagingProfileRequest, UUID.fromString(id));
+            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), updateMessagingProfileRequest).execute();
             System.out.printf("Updated messaging profile with ID: %s\n", messagingProfileResponse.getData().getId());
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -184,7 +191,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.retrieveMessagingProfile(UUID.fromString(id));
+            MessagingProfileResponse messagingProfileResponse = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).execute();
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagingProfilesApi#getMessagingProfile");

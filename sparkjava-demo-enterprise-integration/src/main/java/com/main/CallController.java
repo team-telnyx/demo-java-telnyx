@@ -28,7 +28,7 @@ public class CallController {
                 .clientState(clientState);
         RetrieveCallStatusResponse outboundCall = null;
         try {
-            outboundCall = apiInstance.callDial(outboundCallRequest);
+            outboundCall = apiInstance.callDial(outboundCallRequest).execute();
         } catch (ApiException e) {
             e.printStackTrace();
         }

@@ -27,22 +27,11 @@ public class NumbersController {
 
         try {
             ListAvailablePhoneNumbersResponse availablePhoneNumbers = apiInstance
-                    .listAvailablePhoneNumbers(
-                            null,
-                            null,
-                            null,
-                            city,
-                            state,
-                            countryCode,
-                            null,
-                            null,
-                            null,
-                            null,
-                            2,
-                            null,
-                            null,
-                            null
-                    );
+                    .listAvailablePhoneNumbers()
+                    .filterCountryCode(countryCode)
+                    .filterAdministrativeArea(state)
+                    .filterLocality(city)
+                    .execute();
             numbersResponse.setApiResponse(availablePhoneNumbers);
             numbersResponse.setJson(new Gson().toJson(availablePhoneNumbers));
             numbersResponse.setValid(true);
@@ -60,7 +49,7 @@ public class NumbersController {
         CreateNumberOrderRequest orderRequest = new CreateNumberOrderRequest()
                 .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber));
         try {
-            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
+            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest).execute();
             return new Gson().toJson(orderResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
@@ -89,7 +78,7 @@ public class NumbersController {
         try {
             apiInstance.createNumberReservation(numberReservationRequest);
             NumberReservationResponse numberReservations = apiInstance
-                    .createNumberReservation(numberReservationRequest);
+                    .createNumberReservation(numberReservationRequest).execute();
             return new Gson().toJson(numberReservations);
         } catch (Exception e) {
             System.err.println("Exception when calling NumberReservationsApi#createNumberReservations");

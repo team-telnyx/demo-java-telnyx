@@ -35,6 +35,7 @@ import com.main.scenarios.NumberReservationScenarios;
 import com.main.scenarios.NumberSearchScenarios;
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.Configuration;
+import com.telnyx.sdk.auth.HttpBearerAuth;
 import com.telnyx.sdk.models.CallInitiatedEvent;
 import com.telnyx.sdk.models.CreateLongCodeMessageRequest;
 import com.telnyx.sdk.models.CreateMessagingProfileRequest;
@@ -70,7 +71,9 @@ public class TelnyxExample {
 
         assert TELNYX_APP_PORT != null;
         // Instantiate the client
-        defaultClient.setAccessToken(TELNYX_API_KEY);
+        HttpBearerAuth bearerAuth = (HttpBearerAuth) defaultClient.getAuthentication("bearerAuth");
+        bearerAuth.setBearerToken(TELNYX_API_KEY);
+
         port(Integer.parseInt(TELNYX_APP_PORT));
         get("/", (req, res) -> "Hello World");
 
