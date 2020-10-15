@@ -2,12 +2,12 @@ package com.main.scenarios;
 
 
 import com.telnyx.sdk.ApiClient;
-import com.telnyx.sdk.apis.NumberReservationsApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.AvailablePhoneNumber;
-import com.telnyx.sdk.models.CreateNumberReservationRequest;
-import com.telnyx.sdk.models.NumberReservationResponse;
-import com.telnyx.sdk.models.ReservedPhoneNumber;
+import com.telnyx.sdk.api.NumberReservationsApi;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.AvailablePhoneNumber;
+import com.telnyx.sdk.model.CreateNumberReservationRequest;
+import com.telnyx.sdk.model.NumberReservationResponse;
+import com.telnyx.sdk.model.ReservedPhoneNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,7 @@ public class NumberReservationScenarios implements TestScenario {
         try {
             response = numberReservationsApi.createNumberReservation(
                     new CreateNumberReservationRequest()
-                            .addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumber)))
-                    .execute();
+                            .addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumber)));
         } catch (Exception e) {
             assert false;
         }
@@ -71,7 +70,6 @@ public class NumberReservationScenarios implements TestScenario {
             reservationId = Objects.requireNonNull(numberReservationsApi.createNumberReservation(
                     new CreateNumberReservationRequest()
                             .addPhoneNumbersItem(new ReservedPhoneNumber().phoneNumber(phoneNumber)))
-                    .execute()
                     .getData())
                     .getId();
             assert reservationId != null;
@@ -81,8 +79,7 @@ public class NumberReservationScenarios implements TestScenario {
 
         //when
         try {
-            response = numberReservationsApi.extendNumberReservationExpiryTime(reservationId.toString())
-                    .execute();
+            response = numberReservationsApi.extendNumberReservationExpiryTime(reservationId.toString());
         } catch (Exception e) {
             assert false;
         }
@@ -114,8 +111,7 @@ public class NumberReservationScenarios implements TestScenario {
                     .map(phoneNumber -> new ReservedPhoneNumber().phoneNumber(phoneNumber))
                     .collect(Collectors.toList());
             response = numberReservationsApi.createNumberReservation(
-                    new CreateNumberReservationRequest().phoneNumbers(reservedPhoneNumbers))
-                    .execute();
+                    new CreateNumberReservationRequest().phoneNumbers(reservedPhoneNumbers));
         } catch (Exception e) {
             assert false;
         }

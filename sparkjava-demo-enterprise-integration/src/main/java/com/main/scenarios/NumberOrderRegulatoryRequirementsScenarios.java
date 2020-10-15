@@ -2,13 +2,13 @@ package com.main.scenarios;
 
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.NumberOrderRegulatoryRequirementsApi;
-import com.telnyx.sdk.apis.NumberOrdersApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.CreateNumberOrderRequest;
-import com.telnyx.sdk.models.ListNumberOrderRegulatoryRequirementsResponse;
-import com.telnyx.sdk.models.ListPhoneNumberRegulatoryRequirementsResponse;
-import com.telnyx.sdk.models.PhoneNumber;
+import com.telnyx.sdk.api.NumberOrderRegulatoryRequirementsApi;
+import com.telnyx.sdk.api.NumberOrdersApi;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.CreateNumberOrderRequest;
+import com.telnyx.sdk.model.ListNumberOrderRegulatoryRequirementsResponse;
+import com.telnyx.sdk.model.ListPhoneNumberRegulatoryRequirementsResponse;
+import com.telnyx.sdk.model.PhoneNumber;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -57,8 +57,7 @@ public class NumberOrderRegulatoryRequirementsScenarios implements TestScenario 
 
             numberOrdersApi.createNumberOrder(
                     new CreateNumberOrderRequest()
-                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
         } catch (Exception e) {
             assert false;
         }

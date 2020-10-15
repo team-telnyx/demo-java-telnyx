@@ -3,22 +3,22 @@ package com.main.scenarios;
 
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.NumberConfigurationsApi;
-import com.telnyx.sdk.apis.NumberOrdersApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.CallRecording;
-import com.telnyx.sdk.models.CreateNumberOrderRequest;
-import com.telnyx.sdk.models.ListMessagingSettingsResponse;
-import com.telnyx.sdk.models.ListPhoneNumbersResponse;
-import com.telnyx.sdk.models.ListPhoneNumbersWithVoiceSettingsResponse;
-import com.telnyx.sdk.models.PhoneNumber;
-import com.telnyx.sdk.models.PhoneNumberEnableEmergency;
-import com.telnyx.sdk.models.PhoneNumberEnableEmergencyRequest;
-import com.telnyx.sdk.models.RetrieveMessagingSettingsResponse;
-import com.telnyx.sdk.models.RetrievePhoneNumberVoiceResponse;
-import com.telnyx.sdk.models.UpdatePhoneNumberMessagingSettingsRequest;
-import com.telnyx.sdk.models.UpdatePhoneNumberRequest;
-import com.telnyx.sdk.models.UpdatePhoneNumberVoiceSettingsRequest;
+import com.telnyx.sdk.api.NumberConfigurationsApi;
+import com.telnyx.sdk.api.NumberOrdersApi;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.CallRecording;
+import com.telnyx.sdk.model.CreateNumberOrderRequest;
+import com.telnyx.sdk.model.ListMessagingSettingsResponse;
+import com.telnyx.sdk.model.ListPhoneNumbersResponse;
+import com.telnyx.sdk.model.ListPhoneNumbersWithVoiceSettingsResponse;
+import com.telnyx.sdk.model.PhoneNumber;
+import com.telnyx.sdk.model.PhoneNumberEnableEmergency;
+import com.telnyx.sdk.model.PhoneNumberEnableEmergencyRequest;
+import com.telnyx.sdk.model.RetrieveMessagingSettingsResponse;
+import com.telnyx.sdk.model.RetrievePhoneNumberVoiceResponse;
+import com.telnyx.sdk.model.UpdatePhoneNumberMessagingSettingsRequest;
+import com.telnyx.sdk.model.UpdatePhoneNumberRequest;
+import com.telnyx.sdk.model.UpdatePhoneNumberVoiceSettingsRequest;
 
 import java.util.Collections;
 import java.util.List;
@@ -116,11 +116,9 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
         } catch (ApiException e) {
@@ -129,8 +127,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = numberConfigurationsApi.retrievePhoneNumberWithVoiceSettings(phoneNumberId)
-                    .execute();
+            response = numberConfigurationsApi.retrievePhoneNumberWithVoiceSettings(phoneNumberId);
         } catch (ApiException e) {
             assert false;
         }
@@ -153,11 +150,9 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
         } catch (ApiException e) {
@@ -168,8 +163,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
         try {
             response = numberConfigurationsApi.updatePhoneNumberWithVoiceSettings(phoneNumberId,
                     new UpdatePhoneNumberVoiceSettingsRequest()
-                            .callRecording(new CallRecording().inboundCallRecordingEnabled(true)))
-                    .execute();
+                            .callRecording(new CallRecording().inboundCallRecordingEnabled(true)));
         } catch (ApiException e) {
             assert false;
         }
@@ -198,11 +192,9 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
         } catch (ApiException e) {
@@ -213,8 +205,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
         try {
             response = numberConfigurationsApi.enableEmergencyPhoneNumber(
                     phoneNumberId, new PhoneNumberEnableEmergencyRequest()
-                            .emergencyEnabled(true))
-                    .execute();
+                            .emergencyEnabled(true));
         } catch (ApiException e) {
             assert false;
         }
@@ -255,11 +246,9 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
         } catch (ApiException e) {
@@ -269,8 +258,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
 
         //when
         try {
-            response = numberConfigurationsApi.retrievePhoneNumberWithMessagingSettings(phoneNumberId)
-                    .execute();
+            response = numberConfigurationsApi.retrievePhoneNumberWithMessagingSettings(phoneNumberId);
         } catch (ApiException e) {
             assert false;
         }
@@ -295,11 +283,9 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
         } catch (ApiException e) {
@@ -311,8 +297,7 @@ public class NumberConfigurationsScenarios implements TestScenario {
             response = numberConfigurationsApi.updatePhoneNumberWithMessagingSettings(
                     phoneNumberId,
                     new UpdatePhoneNumberMessagingSettingsRequest()
-                            .messagingProfileId(targetMessagingProfileId))
-                    .execute();
+                            .messagingProfileId(targetMessagingProfileId));
         } catch (ApiException e) {
             assert false;
         }
@@ -371,19 +356,16 @@ public class NumberConfigurationsScenarios implements TestScenario {
                     .getPhoneNumber();
 
             numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
-                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
 
             String phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
-                    .execute()
                     .getData())
                     .getId();
 
             numberConfigurationsApi.updatePhoneNumber(
                     phoneNumberId,
                     new UpdatePhoneNumberRequest()
-                            .tags(Collections.singletonList(tag)))
-                    .execute();
+                            .tags(Collections.singletonList(tag)));
         } catch (ApiException e) {
             assert false;
         }

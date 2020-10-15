@@ -1,10 +1,10 @@
 package com.main;
 
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.CallCommandsApi;
-import com.telnyx.sdk.models.Call;
-import com.telnyx.sdk.models.CallRequest;
-import com.telnyx.sdk.models.RetrieveCallStatusResponse;
+import com.telnyx.sdk.api.CallCommandsApi;
+import com.telnyx.sdk.model.Call;
+import com.telnyx.sdk.model.CallRequest;
+import com.telnyx.sdk.model.RetrieveCallStatusResponse;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public class CallController {
                 .clientState(clientState);
         RetrieveCallStatusResponse outboundCall = null;
         try {
-            outboundCall = apiInstance.callDial(outboundCallRequest).execute();
+            outboundCall = apiInstance.callDial(outboundCallRequest);
         } catch (ApiException e) {
             e.printStackTrace();
         }
