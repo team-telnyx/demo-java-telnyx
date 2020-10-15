@@ -6,12 +6,12 @@ import static com.main.TelnyxExample.defaultClient;
 import com.google.gson.Gson;
 import com.main.model.MessageSendRequest;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.MessagesApi;
-import com.telnyx.sdk.models.BaseMessageRequest;
-import com.telnyx.sdk.models.CreateLongCodeMessageRequest;
-import com.telnyx.sdk.models.CreateMessageRequest;
-import com.telnyx.sdk.models.CreateNumberPoolMessageRequest;
-import com.telnyx.sdk.models.MessageResponse;
+import com.telnyx.sdk.api.MessagesApi;
+import com.telnyx.sdk.model.BaseMessageRequest;
+import com.telnyx.sdk.model.CreateLongCodeMessageRequest;
+import com.telnyx.sdk.model.CreateMessageRequest;
+import com.telnyx.sdk.model.CreateNumberPoolMessageRequest;
+import com.telnyx.sdk.model.MessageResponse;
 import java.util.UUID;
 
 public class MessagingController {
@@ -37,7 +37,7 @@ public class MessagingController {
 
         // Send the message
         try {
-            MessageResponse result = apiInstance.createMessage().createMessageRequest(newMessage).execute();
+            MessageResponse result = apiInstance.createMessage(newMessage);
             UUID id = result.getData().getId();
             System.out.printf("Sent message with ID: %s\n", id);
             return new Gson().toJson(result);
@@ -61,7 +61,7 @@ public class MessagingController {
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
         try {
-            MessageResponse result = apiInstance.createNumberPoolMessage().createNumberPoolMessageRequest(request).execute();
+            MessageResponse result = apiInstance.createNumberPoolMessage(request);
             UUID id = result.getData().getId();
             System.out.printf("Sent message using number pool with ID: %s\n", id);
             return new Gson().toJson(result);
@@ -80,7 +80,7 @@ public class MessagingController {
         }
 
         try {
-            MessageResponse result = apiInstance.retrieveMessage((UUID.fromString(id))).execute();
+            MessageResponse result = apiInstance.retrieveMessage((UUID.fromString(id)));
             return new Gson().toJson(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagesApi#retrieveMessage");
@@ -97,7 +97,7 @@ public class MessagingController {
         MessagesApi apiInstance = new MessagesApi(defaultClient);
 
         try {
-            MessageResponse result = apiInstance.createLongCodeMessage().createLongCodeMessageRequest(request).execute();
+            MessageResponse result = apiInstance.createLongCodeMessage(request);
             UUID id = result.getData().getId();
             System.out.printf("Sent long code message with ID: %s\n", id);
             return new Gson().toJson(result);

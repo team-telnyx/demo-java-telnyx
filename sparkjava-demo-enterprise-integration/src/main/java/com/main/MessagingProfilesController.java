@@ -3,8 +3,8 @@ package com.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.MessagingProfilesApi;
-import com.telnyx.sdk.models.*;
+import com.telnyx.sdk.api.MessagingProfilesApi;
+import com.telnyx.sdk.model.*;
 
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ public class MessagingProfilesController {
         MessagingProfilesApi apiInstance = new MessagingProfilesApi(defaultClient);
 
         try {
-            MessagingProfileResponse createMessagingProfileResponse = apiInstance.createMessagingProfile(request).execute();
+            MessagingProfileResponse createMessagingProfileResponse = apiInstance.createMessagingProfile(request);
             UUID id = createMessagingProfileResponse.getData().getId();
             System.out.printf("Created messaging profile with ID: %s\n", id);
             return new Gson().toJson(createMessagingProfileResponse);
@@ -34,7 +34,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            RetrieveMessagingProfileMetricsResponse messagingProfileDetailedMetrics = apiInstance.getMessagingProfileDetailedMetrics(UUID.fromString(id))
+            RetrieveMessagingProfileMetricsResponse messagingProfileDetailedMetrics = apiInstance.retrieveMessagingProfileDetailedMetrics(UUID.fromString(id))
                     .timeFrame(timeFrame).execute();
             return new Gson().toJson(messagingProfileDetailedMetrics);
         } catch (ApiException e) {
@@ -80,7 +80,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.deleteMessagingProfile(UUID.fromString(id)).execute();
+            MessagingProfileResponse messagingProfileResponse = apiInstance.deleteMessagingProfile(UUID.fromString(id));
             System.out.printf("Deleted messaging profile with ID: %s\n", id);
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -102,7 +102,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), request).execute();
+            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), request);
             System.out.printf("Updated messaging profile with ID: %s\n", messagingProfileResponse.getData().getId());
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -143,10 +143,10 @@ public class MessagingProfilesController {
         //By default, GSON ignores any Java variables that are null, which is the value
         //required by the Telnyx api to remove the number pool. Hopefully there's a better
         //way to do this.
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.serializeNulls();
-        Gson gson = gsonBuilder.create();
-        defaultClient.getJSON().setGson(gson);
+//        GsonBuilder gsonBuilder = new GsonBuilder();
+//        gsonBuilder.serializeNulls();
+//        Gson gson = gsonBuilder.create();
+////        defaultClient.getJSON().setGson(gson);
 
         MessagingProfilesApi apiInstance = new MessagingProfilesApi(defaultClient);
 
@@ -156,7 +156,7 @@ public class MessagingProfilesController {
 
         try {
             //TODO: This call isn't working - maybe the SDK is out of sync with the production API
-            MessagingProfile existingMessagingProfile = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).execute().getData();
+            MessagingProfile existingMessagingProfile = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).getData();
 
             UpdateMessagingProfileRequest updateMessagingProfileRequest = new UpdateMessagingProfileRequest()
                     .enabled(existingMessagingProfile.getEnabled())
@@ -169,7 +169,7 @@ public class MessagingProfilesController {
                     .webhookUrl(existingMessagingProfile.getWebhookUrl())
                     .whitelistedDestinations(existingMessagingProfile.getWhitelistedDestinations());
 
-            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), updateMessagingProfileRequest).execute();
+            MessagingProfileResponse messagingProfileResponse = apiInstance.updateMessagingProfile(UUID.fromString(id), updateMessagingProfileRequest);
             System.out.printf("Updated messaging profile with ID: %s\n", messagingProfileResponse.getData().getId());
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
@@ -191,7 +191,7 @@ public class MessagingProfilesController {
         }
 
         try {
-            MessagingProfileResponse messagingProfileResponse = apiInstance.retrieveMessagingProfile(UUID.fromString(id)).execute();
+            MessagingProfileResponse messagingProfileResponse = apiInstance.retrieveMessagingProfile(UUID.fromString(id));
             return new Gson().toJson(messagingProfileResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagingProfilesApi#getMessagingProfile");

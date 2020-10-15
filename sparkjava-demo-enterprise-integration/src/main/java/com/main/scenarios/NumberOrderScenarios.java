@@ -3,13 +3,13 @@ package com.main.scenarios;
 
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.NumberOrdersApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.AvailablePhoneNumber;
-import com.telnyx.sdk.models.CreateNumberOrderRequest;
-import com.telnyx.sdk.models.ListNumberOrdersResponse;
-import com.telnyx.sdk.models.NumberOrderResponse;
-import com.telnyx.sdk.models.PhoneNumber;
+import com.telnyx.sdk.api.NumberOrdersApi;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.AvailablePhoneNumber;
+import com.telnyx.sdk.model.CreateNumberOrderRequest;
+import com.telnyx.sdk.model.ListNumberOrdersResponse;
+import com.telnyx.sdk.model.NumberOrderResponse;
+import com.telnyx.sdk.model.PhoneNumber;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -50,8 +50,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             response = numberOrderApi.createNumberOrder(
                     new CreateNumberOrderRequest()
-                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))))
-                    .execute();
+                            .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber))));
         } catch (Exception e) {
             assert false;
         }
@@ -83,8 +82,7 @@ public class NumberOrderScenarios implements TestScenario {
         //when
         try {
             response = numberOrderApi.createNumberOrder(
-                    new CreateNumberOrderRequest().phoneNumbers(phoneNumbers))
-                    .execute();
+                    new CreateNumberOrderRequest().phoneNumbers(phoneNumbers));
         } catch (Exception e) {
             assert false;
         }
@@ -115,8 +113,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             response = numberOrderApi.createNumberOrder(
                     new CreateNumberOrderRequest()
-                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
-                    .execute();
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)));
         } catch (Exception e) {
             assert false;
             assert false;
@@ -147,8 +144,7 @@ public class NumberOrderScenarios implements TestScenario {
         try {
             response = numberOrderApi.createNumberOrder(
                     new CreateNumberOrderRequest()
-                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
-                    .execute();
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)));
         } catch (Exception e) {
             assert false;
         }
@@ -179,8 +175,7 @@ public class NumberOrderScenarios implements TestScenario {
 
             numberOrderApi.createNumberOrder(
                     new CreateNumberOrderRequest()
-                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)))
-                    .execute();
+                            .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber)));
         } catch (ApiException e) {
             assert false;
         }

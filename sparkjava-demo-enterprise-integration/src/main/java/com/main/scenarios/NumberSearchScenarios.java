@@ -1,8 +1,8 @@
 package com.main.scenarios;
 
 import com.telnyx.sdk.ApiClient;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.ListAvailablePhoneNumbersResponse;
 
 public class NumberSearchScenarios implements TestScenario {
     private NumberSearchApi apiInstance;

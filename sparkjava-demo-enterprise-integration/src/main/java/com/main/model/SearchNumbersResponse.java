@@ -1,6 +1,6 @@
 package com.main.model;
 
-import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.model.ListAvailablePhoneNumbersResponse;
 
 public class SearchNumbersResponse {
     public ListAvailablePhoneNumbersResponse apiResponse;

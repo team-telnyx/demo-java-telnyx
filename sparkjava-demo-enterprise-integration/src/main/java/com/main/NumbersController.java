@@ -3,16 +3,16 @@ package com.main;
 import com.google.gson.Gson;
 import com.main.model.SearchNumbersResponse;
 import com.telnyx.sdk.ApiException;
-import com.telnyx.sdk.apis.NumberOrdersApi;
-import com.telnyx.sdk.apis.NumberReservationsApi;
-import com.telnyx.sdk.apis.NumberSearchApi;
-import com.telnyx.sdk.models.CreateNumberOrderRequest;
-import com.telnyx.sdk.models.CreateNumberReservationRequest;
-import com.telnyx.sdk.models.ListAvailablePhoneNumbersResponse;
-import com.telnyx.sdk.models.NumberOrderResponse;
-import com.telnyx.sdk.models.NumberReservationResponse;
-import com.telnyx.sdk.models.PhoneNumber;
-import com.telnyx.sdk.models.ReservedPhoneNumber;
+import com.telnyx.sdk.api.NumberOrdersApi;
+import com.telnyx.sdk.api.NumberReservationsApi;
+import com.telnyx.sdk.api.NumberSearchApi;
+import com.telnyx.sdk.model.CreateNumberOrderRequest;
+import com.telnyx.sdk.model.CreateNumberReservationRequest;
+import com.telnyx.sdk.model.ListAvailablePhoneNumbersResponse;
+import com.telnyx.sdk.model.NumberOrderResponse;
+import com.telnyx.sdk.model.NumberReservationResponse;
+import com.telnyx.sdk.model.PhoneNumber;
+import com.telnyx.sdk.model.ReservedPhoneNumber;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class NumbersController {
         CreateNumberOrderRequest orderRequest = new CreateNumberOrderRequest()
                 .addPhoneNumbersItem(new PhoneNumber().phoneNumber(phoneNumber));
         try {
-            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest).execute();
+            NumberOrderResponse orderResponse = apiInstance.createNumberOrder(orderRequest);
             return new Gson().toJson(orderResponse);
         } catch (ApiException e) {
             System.err.println("Exception when calling NumberOrdersApi#createNumberOrder");
@@ -78,7 +78,7 @@ public class NumbersController {
         try {
             apiInstance.createNumberReservation(numberReservationRequest);
             NumberReservationResponse numberReservations = apiInstance
-                    .createNumberReservation(numberReservationRequest).execute();
+                    .createNumberReservation(numberReservationRequest);
             return new Gson().toJson(numberReservations);
         } catch (Exception e) {
             System.err.println("Exception when calling NumberReservationsApi#createNumberReservations");
