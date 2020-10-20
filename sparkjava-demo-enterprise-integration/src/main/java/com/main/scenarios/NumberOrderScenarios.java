@@ -155,11 +155,44 @@ public class NumberOrderScenarios implements TestScenario {
     }
 
     public void get_the_second_page_of_results_for_phone_number_orders() {
-        //TODO: This version of SDK does not contain the pagination params
+        //given
+        order_5_US_phone_numbers();
+
+        //when
+        ListNumberOrdersResponse response = null;
+        try {
+            response = numberOrderApi.listNumberOrders()
+                    .pageNumber(1)
+                    .pageSize(1)
+                    .execute();
+        } catch (ApiException e) {
+            assert false;
+        }
+
+        //then
+        assert response != null;
+        assert response.getData() != null;
     }
 
     public void get_a_page_of_results_that_only_has_2_results_for_phone_number_orders() {
-        //TODO: This version of SDK does not contain the pagination params
+        //given
+        order_5_US_phone_numbers();
+
+        //when
+        ListNumberOrdersResponse response = null;
+        try {
+            response = numberOrderApi.listNumberOrders()
+                    .pageNumber(0)
+                    .pageSize(2)
+                    .execute();
+        } catch (ApiException e) {
+            assert false;
+        }
+
+        //then
+        assert response != null;
+        assert response.getData() != null;
+
     }
 
     public void filter_phone_number_orders_by_created_at_date() {
@@ -205,8 +238,8 @@ public class NumberOrderScenarios implements TestScenario {
         order_5_US_phone_numbers();
         order_a_spanish_phone_number();
         search_and_then_order_a_number_from_paris();
-//        get_the_second_page_of_results_for_phone_number_orders();
-//        get_a_page_of_results_that_only_has_2_results_for_phone_number_orders();
+        get_the_second_page_of_results_for_phone_number_orders();
+        get_a_page_of_results_that_only_has_2_results_for_phone_number_orders();
         filter_phone_number_orders_by_created_at_date();
     }
 }

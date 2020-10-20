@@ -14,6 +14,7 @@ import com.telnyx.sdk.model.ListPhoneNumbersWithVoiceSettingsResponse;
 import com.telnyx.sdk.model.PhoneNumber;
 import com.telnyx.sdk.model.PhoneNumberEnableEmergency;
 import com.telnyx.sdk.model.PhoneNumberEnableEmergencyRequest;
+import com.telnyx.sdk.model.PhoneNumberResponse;
 import com.telnyx.sdk.model.RetrieveMessagingSettingsResponse;
 import com.telnyx.sdk.model.RetrievePhoneNumberVoiceResponse;
 import com.telnyx.sdk.model.UpdatePhoneNumberMessagingSettingsRequest;
@@ -174,7 +175,39 @@ public class NumberConfigurationsScenarios implements TestScenario {
     }
 
     public void update_the_voice_settings_of_a_phone_number_to_attach_the_number_to_a_new_connection() {
-        //TODO: We don't have any SDK option to update connection id in this version of SDK
+        //given
+        String phoneNumberId = null;
+        PhoneNumberResponse response = null;
+        try {
+            String phoneNumber = Objects.requireNonNull(numberSearchApi.listAvailablePhoneNumbers()
+                    .filterLimit(1)
+                    .filterFeatures(List.of("sms", "voice"))
+                    .execute()
+                    .getData())
+                    .get(0)
+                    .getPhoneNumber();
+
+            numberOrdersApi.createNumberOrder(new CreateNumberOrderRequest()
+                    .phoneNumbers(Collections.singletonList(new PhoneNumber().phoneNumber(phoneNumber)))).getData().getId();
+
+            phoneNumberId = Objects.requireNonNull(numberConfigurationsApi.retrievePhoneNumber(phoneNumber)
+                    .getData())
+                    .getId();
+        } catch (ApiException e) {
+            assert false;
+        }
+
+        //when
+        try {
+            response = numberConfigurationsApi.updatePhoneNumber(phoneNumberId, new UpdatePhoneNumberRequest().connectionId(connectionId));
+
+        } catch (ApiException e) {
+            assert false;
+        }
+
+        //then
+        assert response != null;
+        assert response.getData() != null;
     }
 
     public void enable_emergency_on_a_phone_number() {
@@ -393,12 +426,10 @@ public class NumberConfigurationsScenarios implements TestScenario {
         view_voice_settings_of_all_phone_numbers();
         view_voice_settings_of_a_specific_phone_number();
         update_the_voice_settings_of_a_phone_number_to_enable_inbound_call_recording();
-
-//        update_the_voice_settings_of_a_phone_number_to_attach_the_number_to_a_new_connection();
-
+        update_the_voice_settings_of_a_phone_number_to_attach_the_number_to_a_new_connection();
         enable_emergency_on_a_phone_number();
-//TODO:: we have to fix on the specs        view_messaging_settings_of_all_phone_numbers();
-//TODO:: we have to fix on the specs         view_messaging_settings_of_a_specific_phone_number();
+        view_messaging_settings_of_all_phone_numbers();
+        view_messaging_settings_of_a_specific_phone_number();
         update_the_messaging_settings_of_a_phone_number_to_attach_the_number_to_a_new_messaging_profile();
         get_the_second_page_of_results_for_phone_numbers();
         get_a_page_of_results_that_only_has_2_results_for_phone_numbers();
