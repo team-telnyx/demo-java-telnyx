@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.main.model.MessageSendRequest;
 import com.telnyx.sdk.ApiException;
 import com.telnyx.sdk.api.MessagesApi;
-import com.telnyx.sdk.model.BaseMessageRequest;
 import com.telnyx.sdk.model.CreateLongCodeMessageRequest;
 import com.telnyx.sdk.model.CreateMessageRequest;
 import com.telnyx.sdk.model.CreateNumberPoolMessageRequest;
