@@ -27,6 +27,7 @@ You will need to set up:
 | [sparkjava-demo-enterprise-integration](./sparkjava-demo-enterprise-integration) | A spark-java server that proxies requests to/from Telnyx with some higher level application logic |
 | [spring-messaging-auto-response](./spring-messaging-auto-response)               | Using Spring to auto-respond to various inbound messages                                          |
 | [spring-phonenumber-search-and-order](./spring-phonenumber-search-and-order)     | Search and order phone numbers via an API                                                         |
+| [spring-masked-calling](./spring-masked-calling)                                 | Proxy/Mask calls and texts from user-A to user-B through Telnyx Call Control and Messaging        |
 
 ## Usage
 
