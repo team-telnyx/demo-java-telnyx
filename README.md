@@ -25,6 +25,8 @@ You will need to set up:
 | Demo                                                                             | Description                                                                                       |
 |:---------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------|
 | [sparkjava-demo-enterprise-integration](./sparkjava-demo-enterprise-integration) | A spark-java server that proxies requests to/from Telnyx with some higher level application logic |
+| [spring-messaging-auto-response](./spring-messaging-auto-response)               | Using Spring to auto-respond to various inbound messages                                          |
+| [spring-phonenumber-search-and-order](./spring-phonenumber-search-and-order)     | Search and order phone numbers via an API                                                         |
 
 ## Usage
 
@@ -38,7 +40,7 @@ The following environmental variables need to be set for most demos in this repo
 
 ### .env file
 
-This app uses the excellent [java dotenv](https://github.com/cdimascio/java-dotenv) package to manage environment variables.
+This app uses the excellent [dotenv-java](https://github.com/cdimascio/dotenv-java) package to manage environment variables.
 
 Make a copy of [`.env.sample`](./.env.sample) and save as `.env` and update the variables to match your creds.
 
