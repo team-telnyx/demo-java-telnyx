@@ -25,7 +25,8 @@ You will need to set up:
 | Demo                                                                             | Description                                                                                       |
 |:---------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------|
 | [sparkjava-demo-enterprise-integration](./sparkjava-demo-enterprise-integration) | A spark-java server that proxies requests to/from Telnyx with some higher level application logic |
-| [spring-messaging-auto-response](./spring-messaging-auto-response) | Using Spring to auto-respond to various inbound messages |
+| [spring-messaging-auto-response](./spring-messaging-auto-response)               | Using Spring to auto-respond to various inbound messages                                          |
+| [spring-phonenumber-search-and-order](./spring-phonenumber-search-and-order)     | Search and order phone numbers via an API                                                         |
 
 ## Usage
 
