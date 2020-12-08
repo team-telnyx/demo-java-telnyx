@@ -1,6 +1,7 @@
 package com.telnyx.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.telnyx.example.model.NumberMapping;
 import com.telnyx.sdk.ApiClient;
 import com.telnyx.sdk.ApiException;
 import com.telnyx.sdk.Configuration;
@@ -18,9 +19,13 @@ import com.telnyx.sdk.model.MessageResponse;
 import com.telnyx.sdk.model.OutboundMessageEvent;
 import com.telnyx.sdk.model.OutboundMessagePayload;
 import com.telnyx.sdk.model.TransferCallRequest;
+import com.telnyx.sdk.model.TransferCallRequest.WebhookUrlMethodEnum;
 import io.github.cdimascio.dotenv.Dotenv;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,26 +43,25 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class ExampleApplication {
 
     static Dotenv dotenv = Dotenv.load();
+    private final static String DELIVERY_GREETING = "https://telnyx-mms-demo.s3.us-east-2.amazonaws.com/deliveryGreeting.mp3";
     private final static String USER_PHONE_NUMBER_A = dotenv.get("USER_PHONE_NUMBER_A");
     private final static String USER_PHONE_NUMBER_B = dotenv.get("USER_PHONE_NUMBER_B");
     private final static String TELNYX_PHONE_NUMBER = dotenv.get("TELNYX_PHONE_NUMBER");
     private final static String YOUR_TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
-    private static final String OUTBOUND_MESSAGING_PATH = "/messaging/outbound";
-    private static final String INBOUND_MESSAGING_PATH = "/messaging/inbound";
-    private static final String OUTBOUND_TRANSFER_CALL_CONTROL_PATH = "/call-control/outbound/transfer";
-    private static final String INBOUND_CALL_CONTROL_PATH = "/call-control/inbound";
-    private static final String INBOUND_ANSWER_CALL_CONTROL_PATH = "/call-control/inbound/answer";
+    private final static String NUMBER_MAPPINGS_PATH = "/numberMappings";
+    private final static String OUTBOUND_MESSAGING_PATH = "/messaging/outbound";
+    private final static String INBOUND_MESSAGING_PATH = "/messaging/inbound";
+    private final static String OUTBOUND_TRANSFER_CALL_CONTROL_PATH = "/call-control/outbound/transfer";
+    private final static String INBOUND_CALL_CONTROL_PATH = "/call-control/inbound";
+    private final static String INBOUND_ANSWER_CALL_CONTROL_PATH = "/call-control/inbound/answer";
 
-    private static ApiClient defaultClient = Configuration.getDefaultApiClient();
-    private static NumberMappings numberMappings;
+    private final static ApiClient defaultClient = Configuration.getDefaultApiClient();
+    private final static NumberMappings numberMappings = new NumberMappings();
 
     public static void main(String[] args) {
         defaultClient.setBasePath("https://api.telnyx.com/v2");
         HttpBearerAuth bearerAuth = (HttpBearerAuth) defaultClient.getAuthentication("bearerAuth");
         bearerAuth.setBearerToken(YOUR_TELNYX_API_KEY);
-        numberMappings = new NumberMappings();
-        numberMappings.addNumberMapping(TELNYX_PHONE_NUMBER,
-                Arrays.asList(USER_PHONE_NUMBER_A, USER_PHONE_NUMBER_B));
         SpringApplication.run(ExampleApplication.class, args);
     }
 
@@ -69,6 +74,34 @@ public class ExampleApplication {
     @GetMapping("/")
     public String hello(){
         return "Hello World";
+    }
+
+    @PostMapping(NUMBER_MAPPINGS_PATH)
+    public NumberMapping mapping(@RequestBody NumberMapping numberMapping) {
+        numberMappings.addNumberMapping(numberMapping);
+        return numberMapping;
+    }
+
+    @GetMapping(NUMBER_MAPPINGS_PATH)
+    public List<NumberMapping> mapping(
+            @RequestParam Optional<String> telnyx_phone_number,
+            @RequestParam Optional<String> end_user_phone_number){
+        if (telnyx_phone_number.isPresent() && end_user_phone_number.isPresent()) {
+            return new ArrayList<NumberMapping>() {
+                {
+                    add(numberMappings.getNumberMapping(telnyx_phone_number.get(), end_user_phone_number.get()));
+                }
+            };
+        }
+        else if (telnyx_phone_number.isPresent() && end_user_phone_number.isEmpty()) {
+            return numberMappings.getNumberMappingsByTelnyxPhoneNumber(telnyx_phone_number.get());
+        }
+        else if (telnyx_phone_number.isEmpty() && end_user_phone_number.isPresent()) {
+            return numberMappings.getNumberMappingsByEndUserPhoneNumber(end_user_phone_number.get());
+        }
+        else {
+            return numberMappings.getNumberMappings();
+        }
     }
 
     @PostMapping(OUTBOUND_TRANSFER_CALL_CONTROL_PATH)
@@ -116,7 +149,9 @@ public class ExampleApplication {
                 .toUriString();
 
         TransferCallRequest transferCallRequest = new TransferCallRequest()
+                .audioUrl(DELIVERY_GREETING)
                 .webhookUrl(webhookUrl)
+                .webhookUrlMethod(WebhookUrlMethodEnum.POST)
                 .from(telnyxPhoneNumber)
                 .to(forwardToPhoneNumber);
         try {
