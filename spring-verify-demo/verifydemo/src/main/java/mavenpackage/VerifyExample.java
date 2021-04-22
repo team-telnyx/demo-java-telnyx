@@ -14,9 +14,9 @@ import java.util.stream.Collectors;;
 
 public class VerifyExample {
 
-    private static final String TELNYX_API_KEY = "KEY01786AAE888EF42BC90F29E17BFE801C_HhUKXw5oWcsK1BYiyo8sth";
-    private static final String TELNYX_VERIFY_PROFILE_ID = "49000177-6f84-061f-aea3-bce5c612640c";
-    private static final String numberInput = "+19706914894";
+    static Dotenv dotenv = Dotenv.load();
+    private static final String TELNYX_API_KEY = dotenv.get("TELNYX_API_KEY");
+    private static final String TELNYX_VERIFY_PROFILE_ID = dotenv.get("TELNYX_VERIFY_PROFILE_ID");
 
     public static void SendVerificationCode (String phoneNumber) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
@@ -36,7 +36,7 @@ public class VerifyExample {
 
         try {
             apiInstance.createVerification(createVerificationRequest);
-            System.out.print("Verification code sent to " + numberInput);
+            System.out.print("Verification code sent to " + phoneNumber);
         } catch (ApiException e) {
             System.err.println("Exception when calling VerificationApi#createVerification");
             System.err.println("Status code: " + e.getCode());
@@ -93,6 +93,11 @@ public class VerifyExample {
     }
 
     public static void main(String[] args) {
+                
+        if (TELNYX_API_KEY == "" || TELNYX_VERIFY_PROFILE_ID == "") {
+            System.out.println("Check .env variables!");
+            System.exit(-1);
+        }
         Scanner numObj = new Scanner(System.in); // Create a Scanner object
         System.out.println("Phone Number (+E164 Format) to Verify?: ");
 
