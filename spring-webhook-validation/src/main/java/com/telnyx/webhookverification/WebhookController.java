@@ -23,7 +23,7 @@ public class WebhookController {
     private static final Dotenv dotenv = Dotenv.load();
     private final String TELNYX_PUBLIC_KEY = dotenv.get("TELNYX_PUBLIC_KEY");
 
-    @PostMapping("/webhooks")
+    @PostMapping("/messaging/inbound")
     public ResponseEntity<Void> webhook(@RequestBody String payload, @RequestHeader HttpHeaders headers) {
         Security.addProvider(new BouncyCastleProvider());
         String signature = headers.get("telnyx-signature-ed25519").get(0);
