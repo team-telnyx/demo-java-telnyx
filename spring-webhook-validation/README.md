@@ -15,7 +15,7 @@ In order to observe the webhook validation service in operation, we must:
 * [Setup and run the spring messaging auto response demo](https://github.com/team-telnyx/demo-java-telnyx/tree/master/spring-messaging-auto-response), ensuring that we keep the `ngrok` session alive as we record incoming webhooks.
 * Shut down the messaging auto response server
 * Setup and run this project on port 8000 (follow instructions below)
-* [From the (still running) ngrok web interface](http://127.0.0.1:4040), click to replay a recent webhook
+* [From the (still running) ngrok web interface](http://127.0.0.1:4040), select a recent "POST /messaging/inbound" webhook and click to replay
 * Note the successful receipt of the validated webhook
 * Now repeat the process above, this time modifying the value of the `telnyx-signature-ed25519` field.
 * Note the unsuccessful receipt of the invalidated webhook
