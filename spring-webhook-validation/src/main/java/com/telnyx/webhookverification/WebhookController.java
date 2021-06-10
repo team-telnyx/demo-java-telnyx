@@ -26,8 +26,13 @@ public class WebhookController {
     @PostMapping("/messaging/inbound")
     public ResponseEntity<Void> webhook(@RequestBody String payload, @RequestHeader HttpHeaders headers) {
         Security.addProvider(new BouncyCastleProvider());
-        String signature = headers.get("telnyx-signature-ed25519").get(0);
-        String timestamp = headers.get("telnyx-timestamp").get(0);
+        try {
+            String signature = headers.get("telnyx-signature-ed25519").get(0);
+            String timestamp = headers.get("telnyx-timestamp").get(0);
+        }
+        catch (Exception e) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         String signedPayload = timestamp + "|" + payload;
         byte[] signedPayloadBytes = signedPayload.getBytes(StandardCharsets.UTF_8);
 
