@@ -1,0 +1,27 @@
+<dependencies>
+    <!-- Spring Boot dependencies -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- WebSocket support -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+
+    <!-- WebSocket client (Tyrus) -->
+    <dependency>
+        <groupId>org.glassfish.tyrus.bundles</groupId>
+        <artifactId>tyrus-standalone-client</artifactId>
+        <version>1.17</version>
+    </dependency>
+
+    <!-- dotenv equivalent for Java -->
+    <dependency>
+        <groupId>io.github.cdimascio</groupId>
+        <artifactId>java-dotenv</artifactId>
+        <version>5.2.2</version>
+    </dependency>
+</dependencies>
